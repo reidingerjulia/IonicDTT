@@ -22,8 +22,8 @@ var app = Elm.DTT.init({
 }
 ```
 
-**Note:**
-`initialSeed` needs to be a random value between `0` and `1`.
+* `currentTime` is given in unix time.
+* `initialSeed` needs to be a random value between `0` and `1`.
 
 ## Methods
 
@@ -55,7 +55,7 @@ app.ports.syncTodoEntry.send();
 
 ### deleteTodoEntry
 
-Deletes an Entry.
+Deletes an entry.
 
 Will cause an error if the entry was not created by the user.
 
@@ -73,7 +73,7 @@ app.ports.deleteTodoEntry.send({id:"729598701"});
 
 ### updateTodoEntry
 
-Updates the message of an Entry.
+Updates the message of an entry.
 
 Will cause an error if the entry was not created by the user.
 
@@ -120,11 +120,10 @@ The list will update every minute as well as after every method call.
 ]
 ```
 
-**Note:**
-`lastUpdated` is given in unix time.
+* `lastUpdated` is given in unix time.
 
 #### Example
 
 ```
-app.ports.gotTodoList.subscribe(function(string){console.log(string)});
+app.ports.gotTodoList.subscribe(function(data){console.log(data)});
 ```
