@@ -4,7 +4,6 @@ Initate the module using the following code snippet
 
 ```
 var app = Elm.DTT.init({
-  node: document.getElementById('elm'),
   flags:
   {
     user: "Julia",
