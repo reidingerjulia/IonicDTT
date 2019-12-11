@@ -1,0 +1,28 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+	<meta charset="UTF-8">
+	<title>Main</title>
+	<script src="main.js"></script>
+</head>
+
+<body>
+	<div id="elm"></div>
+	<script>
+		var app = Elm.DTT.init({
+			node: document.getElementById('elm'),
+			flags:
+			{
+				user: "Julia"
+				, currentTime: Date.now()
+				, initialSeed: Math.random()
+			}
+		});
+
+		app.ports.errorOccured.subscribe(data => console.log(data));
+		app.ports.gotTodoList.subscribe(data => console.log(data));
+	</script>
+</body>
+
+</html>
