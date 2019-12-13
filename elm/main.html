@@ -18,8 +18,7 @@
 			}
 		});
 
-		app.ports.errorOccured.subscribe(data => console.log(data));
-		app.ports.gotTodoList.subscribe(data => console.log(data));
+		app.ports.fromElm.subscribe(data => console.log(data));
 	</script>
 </body>
 
