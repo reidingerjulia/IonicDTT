@@ -5,7 +5,7 @@
 Initate the module using the following code snippet
 
 ```
-var app = Elm.DTT.init({
+var app = Elm.Main.init({
   flags: flag
   {
     user: "Julia",

@@ -1,4 +1,4 @@
-port module DTT exposing (main)
+port module Main exposing (main)
 
 import Codec exposing (Codec)
 import DTT.Data.Config exposing (Config)
@@ -30,6 +30,8 @@ type Input
         , message : String
         }
     | InsertSecret { secret : String }
+    | DeleteSecret { secret : String }
+    | SyncSecret
 
 
 handleInput : E.Value -> Msg
@@ -42,7 +44,7 @@ handleInput =
                 case page of
                     "todo" ->
                         case ( action, id, content ) of
-                            ( "input", Nothing, Just message ) ->
+                            ( "insert", Nothing, Just message ) ->
                                 Ok <| InputTodoEntry <| { message = message }
 
                             ( "delete", Just i, Nothing ) ->
@@ -63,8 +65,14 @@ handleInput =
 
                     "secrets" ->
                         case ( action, id, content ) of
-                            ( "input", Nothing, Just secret ) ->
+                            ( "insert", Nothing, Just secret ) ->
                                 Ok <| InsertSecret <| { secret = secret }
+                            
+                            ( "delete", Nothing, Just secret ) ->
+                                Ok <| DeleteSecret <| {secret = secret }
+
+                            ( "sync",Nothing,Nothing) ->
+                                Ok <| SyncSecret
 
                             _ ->
                                 Err <| WrongInputFormat <| form
@@ -120,7 +128,7 @@ type Msg
 
 init : Flag -> ( Model, Cmd Msg )
 init { user, currentTime, initialSeed } =
-    ( { user = user
+    ( { user = user |> String.toLower
       , currentTime = currentTime |> Time.millisToPosix
       , seed = Random.initialSeed (Random.minInt + round (initialSeed * toFloat (Random.maxInt * 2)))
       }
@@ -225,6 +233,19 @@ update msg model =
                             ( model
                             , secret
                                 |> Secrets.insert model
+                                |> Task.attempt GotSecretResponse
+                            )
+                        
+                        DeleteSecret {secret} ->
+                            ( model
+                            , secret
+                                |> Secrets.delete model
+                                |> Task.attempt GotSecretResponse
+                                )
+                        
+                        SyncSecret ->
+                            ( model
+                            , Secrets.getList model
                                 |> Task.attempt GotSecretResponse
                             )
 

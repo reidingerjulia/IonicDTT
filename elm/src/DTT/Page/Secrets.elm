@@ -14,6 +14,7 @@ type Error
 
 insert : Config -> String -> Task Error (List Secret)
 insert config =
+    String.toLower >>
     Sha256.sha224
         >> (\hash ->
                 Secret.getResponse hash
@@ -40,7 +41,10 @@ insert config =
 
 
 delete : Config -> String -> Task Error (List Secret)
-delete config hash =
+delete config =
+    String.toLower >>
+    Sha256.sha224
+        >> (\hash ->
     Secret.getResponse hash
         |> Task.mapError HttpError
         |> Task.andThen
@@ -63,7 +67,7 @@ delete config hash =
                         Task.succeed ()
             )
         |> Task.andThen
-            (\() -> getList config)
+            (\() -> getList config))
 
 
 getList : Config -> Task Error (List Secret)
