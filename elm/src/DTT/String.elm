@@ -1,4 +1,4 @@
-module DTT.String exposing (match, secrets, todo)
+module DTT.String exposing (raw, secrets, todo)
 
 
 todo : String
@@ -11,6 +11,6 @@ secrets =
     "/secrets"
 
 
-match : String
-match =
-    "/match"
+raw : String
+raw =
+    "/raw"

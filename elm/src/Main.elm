@@ -1,6 +1,7 @@
 port module Main exposing (main)
 
 import Codec exposing (Codec)
+import DTT.Data as Data
 import DTT.Data.Config exposing (Config)
 import DTT.Data.Error as Error exposing (Error(..))
 import DTT.Data.InputForm as InputForm exposing (InputForm)
@@ -12,6 +13,7 @@ import DTT.Page.Todo as Todo
 import Http
 import Json.Decode as D
 import Json.Encode as E
+import Jsonstore
 import Random
 import Result exposing (Result)
 import Task
@@ -43,6 +45,14 @@ handleInput =
         >> Result.andThen
             (\({ page, action, id, content } as form) ->
                 case page of
+                    "admin" ->
+                        case ( action, id, content ) of
+                            ( "reset", Nothing, Nothing ) ->
+                                Ok <| ForceReset
+
+                            _ ->
+                                Err <| WrongInputFormat <| form
+
                     "todo" ->
                         case ( action, id, content ) of
                             ( "insert", Nothing, Just message ) ->
@@ -68,11 +78,11 @@ handleInput =
                         case ( action, id, content ) of
                             ( "insert", Nothing, Just secret ) ->
                                 Ok <| InsertSecret <| { secret = secret }
-                            
-                            ( "delete", Nothing, Just secret ) ->
-                                Ok <| DeleteSecret <| {secret = secret }
 
-                            ( "sync",Nothing,Nothing) ->
+                            ( "delete", Nothing, Just secret ) ->
+                                Ok <| DeleteSecret <| { secret = secret }
+
+                            ( "sync", Nothing, Nothing ) ->
                                 Ok <| SyncSecret
 
                             _ ->
@@ -133,7 +143,7 @@ init { user, currentTime, initialSeed } =
       , currentTime = currentTime |> Time.millisToPosix
       , seed = Random.initialSeed (Random.minInt + round (initialSeed * toFloat (Random.maxInt * 2)))
       }
-    , Todo.getList GotTodoResponse
+    , Todo.getList |> Task.attempt GotTodoResponse
     )
 
 
@@ -143,7 +153,7 @@ update msg model =
         GotTime posix ->
             ( { model | currentTime = posix }
             , Cmd.batch
-                [ Todo.getList GotTodoResponse
+                [ Todo.getList |> Task.attempt GotTodoResponse
                 , Secrets.getList model |> Task.attempt GotSecretResponse
                 ]
             )
@@ -213,25 +223,25 @@ update msg model =
                             in
                             ( { model | seed = seed }
                             , cmd
-                                |> Task.attempt  GotTodoResponse 
+                                |> Task.attempt GotTodoResponse
                             )
 
                         SyncTodoEntry ->
                             ( model
                             , Todo.getList
-                                |> Task.attempt  GotTodoResponse 
+                                |> Task.attempt GotTodoResponse
                             )
 
                         DeleteTodoEntry { id } ->
                             ( model
                             , Todo.deleteEntry model id
-                                |> Task.attempt  GotTodoResponse 
+                                |> Task.attempt GotTodoResponse
                             )
 
                         UpdateTodoEntry arguments ->
                             ( model
                             , Todo.updateEntry model arguments
-                                 |> Task.attempt  GotTodoResponse 
+                                |> Task.attempt GotTodoResponse
                             )
 
                         InsertSecret { secret } ->
@@ -240,14 +250,14 @@ update msg model =
                                 |> Secrets.insert model
                                 |> Task.attempt GotSecretResponse
                             )
-                        
-                        DeleteSecret {secret} ->
+
+                        DeleteSecret { secret } ->
                             ( model
                             , secret
                                 |> Secrets.delete model
                                 |> Task.attempt GotSecretResponse
-                                )
-                        
+                            )
+
                         SyncSecret ->
                             ( model
                             , Secrets.getList model
@@ -257,9 +267,10 @@ update msg model =
                         ForceReset ->
                             ( model
                             , Jsonstore.delete Data.url
+                                |> Task.mapError Todo.HttpError
                                 |> Task.andThen
                                     (\() -> Todo.getList)
-                                |> GotTodoResponse
+                                |> Task.attempt GotTodoResponse
                             )
 
                 Err err ->

@@ -1,4 +1,4 @@
-module DTT.Data.Secret exposing (Secret, codec, deleteResponse, getListResponse, getResponse, insertResponse, json, updateMatchResponse)
+module DTT.Data.Secret exposing (Secret, codec, deleteResponse, getListResponse, getResponse, insertResponse, json, updateRawResponse)
 
 import Codec exposing (Codec)
 import DTT.Data as Data
@@ -58,12 +58,17 @@ getListResponse =
         |> Task.map (Maybe.map Dict.values >> Maybe.withDefault [])
 
 
-updateRawResponse : { hash : String, raw : String } -> Task Http.Error ()
+updateRawResponse : { hash : String, raw : Maybe String } -> Task Http.Error ()
 updateRawResponse { hash, raw } =
-    Jsonstore.update
-        (Data.url ++ String.secrets ++ "/" ++ hash ++ String.match)
-        Jsonstore.string
-        (always <| raw)
+    case raw of
+        Just r ->
+            r
+                |> Jsonstore.encode Jsonstore.string
+                |> Jsonstore.insert
+                    (Data.url ++ String.secrets ++ "/" ++ hash ++ String.raw)
+
+        Nothing ->
+            Jsonstore.delete (Data.url ++ String.secrets ++ "/" ++ hash ++ String.raw)
 
 
 deleteResponse : String -> Task Http.Error ()

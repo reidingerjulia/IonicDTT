@@ -15,7 +15,7 @@ type Error
 insert : Config -> String -> Task Error (List Secret)
 insert config raw =
     raw
-    String.toLower >>
+        |> String.toLower
         |> Sha256.sha224
         |> (\hash ->
                 Secret.getResponse hash
@@ -27,12 +27,13 @@ insert config raw =
                                         Task.succeed ()
 
                                     else
-                                        Secret.updateMatchResponse hash raw
+                                        Secret.updateRawResponse
+                                            { hash = hash, raw = Just raw }
 
                                 Nothing ->
                                     { user = config.user
                                     , hash = hash
-                                    , match = False
+                                    , raw = Nothing
                                     }
                                         |> Secret.insertResponse
                         )
@@ -43,32 +44,32 @@ insert config raw =
 
 delete : Config -> String -> Task Error (List Secret)
 delete config =
-    String.toLower >>
-    Sha256.sha224
+    String.toLower
+        >> Sha256.sha224
         >> (\hash ->
-    Secret.getResponse hash
-        |> Task.mapError HttpError
-        |> Task.andThen
-            (\maybeEntry ->
-                case maybeEntry of
-                    Just { user, match } ->
-                        if user == config.user then
-                            if match then
-                                Task.fail IsMatched
+                Secret.getResponse hash
+                    |> Task.mapError HttpError
+                    |> Task.andThen
+                        (\maybeEntry ->
+                            case maybeEntry of
+                                Just { user, raw } ->
+                                    if raw == Nothing then
+                                        if user == config.user then
+                                            Secret.deleteResponse hash
+                                                |> Task.mapError HttpError
 
-                            else
-                                Secret.deleteResponse hash
-                                    |> Task.mapError HttpError
+                                        else
+                                            Task.succeed ()
 
-                        else
-                            Secret.updateMatchResponse hash False
-                                |> Task.mapError HttpError
+                                    else
+                                        Task.fail IsMatched
 
-                    Nothing ->
-                        Task.succeed ()
-            )
-        |> Task.andThen
-            (\() -> getList config))
+                                Nothing ->
+                                    Task.succeed ()
+                        )
+                    |> Task.andThen
+                        (\() -> getList config)
+           )
 
 
 getList : Config -> Task Error (List Secret)
@@ -76,9 +77,9 @@ getList config =
     Secret.getListResponse
         |> Task.map
             (List.filter
-                (\{ user, match } ->
+                (\{ user, raw } ->
                     (user == config.user)
-                        || match
+                        || (raw /= Nothing)
                 )
             )
         |> Task.mapError HttpError

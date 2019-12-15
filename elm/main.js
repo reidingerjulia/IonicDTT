@@ -3049,9 +3049,6 @@ var $elm$json$Json$Decode$float = _Json_decodeFloat;
 var $author$project$Main$GotTodoResponse = function (a) {
 	return {$: 'GotTodoResponse', a: a};
 };
-var $author$project$DTT$Page$Todo$HttpError = function (a) {
-	return {$: 'HttpError', a: a};
-};
 var $elm$core$Basics$identity = function (x) {
 	return x;
 };
@@ -3221,6 +3218,9 @@ var $elm$core$Task$attempt = F2(
 							$elm$core$Result$Ok),
 						task))));
 	});
+var $author$project$DTT$Page$Todo$HttpError = function (a) {
+	return {$: 'HttpError', a: a};
+};
 var $elm$core$Basics$composeR = F3(
 	function (f, g, x) {
 		return g(
@@ -4123,12 +4123,7 @@ var $elm$core$Task$mapError = F2(
 			A2($elm$core$Basics$composeL, $elm$core$Task$fail, convert),
 			task);
 	});
-var $author$project$DTT$Page$Todo$getList = function (msg) {
-	return A2(
-		$elm$core$Task$attempt,
-		msg,
-		A2($elm$core$Task$mapError, $author$project$DTT$Page$Todo$HttpError, $author$project$DTT$Data$TodoEntry$getListResponse));
-};
+var $author$project$DTT$Page$Todo$getList = A2($elm$core$Task$mapError, $author$project$DTT$Page$Todo$HttpError, $author$project$DTT$Data$TodoEntry$getListResponse);
 var $elm$random$Random$Seed = F2(
 	function (a, b) {
 		return {$: 'Seed', a: a, b: b};
@@ -4166,7 +4161,7 @@ var $author$project$Main$init = function (_v0) {
 				$elm$random$Random$minInt + $elm$core$Basics$round(initialSeed * ($elm$random$Random$maxInt * 2))),
 			user: $elm$core$String$toLower(user)
 		},
-		$author$project$DTT$Page$Todo$getList($author$project$Main$GotTodoResponse));
+		A2($elm$core$Task$attempt, $author$project$Main$GotTodoResponse, $author$project$DTT$Page$Todo$getList));
 };
 var $elm$core$Platform$Sub$batch = _Platform_batch;
 var $author$project$Main$DeleteSecret = function (a) {
@@ -4175,6 +4170,7 @@ var $author$project$Main$DeleteSecret = function (a) {
 var $author$project$Main$DeleteTodoEntry = function (a) {
 	return {$: 'DeleteTodoEntry', a: a};
 };
+var $author$project$Main$ForceReset = {$: 'ForceReset'};
 var $author$project$Main$GotInput = function (a) {
 	return {$: 'GotInput', a: a};
 };
@@ -4380,50 +4376,60 @@ var $author$project$Main$handleInput = A2(
 					var id = form.id;
 					var content = form.content;
 					switch (page) {
-						case 'todo':
+						case 'admin':
 							var _v1 = _Utils_Tuple3(action, id, content);
-							_v1$4:
+							if (((_v1.a === 'reset') && (_v1.b.$ === 'Nothing')) && (_v1.c.$ === 'Nothing')) {
+								var _v2 = _v1.b;
+								var _v3 = _v1.c;
+								return $elm$core$Result$Ok($author$project$Main$ForceReset);
+							} else {
+								return $elm$core$Result$Err(
+									$author$project$DTT$Data$Error$WrongInputFormat(form));
+							}
+						case 'todo':
+							var _v4 = _Utils_Tuple3(action, id, content);
+							_v4$4:
 							while (true) {
-								if (_v1.b.$ === 'Just') {
-									if (_v1.c.$ === 'Nothing') {
-										if (_v1.a === 'delete') {
-											var i = _v1.b.a;
-											var _v3 = _v1.c;
+								if (_v4.b.$ === 'Just') {
+									if (_v4.c.$ === 'Nothing') {
+										if (_v4.a === 'delete') {
+											var i = _v4.b.a;
+											var _v6 = _v4.c;
 											return $elm$core$Result$Ok(
 												$author$project$Main$DeleteTodoEntry(
 													{id: i}));
 										} else {
-											break _v1$4;
+											break _v4$4;
 										}
 									} else {
-										if (_v1.a === 'update') {
-											var i = _v1.b.a;
-											var message = _v1.c.a;
+										if (_v4.a === 'update') {
+											var i = _v4.b.a;
+											var message = _v4.c.a;
 											return $elm$core$Result$Ok(
 												$author$project$Main$UpdateTodoEntry(
 													{id: i, message: message}));
 										} else {
-											break _v1$4;
+											break _v4$4;
 										}
 									}
 								} else {
-									if (_v1.c.$ === 'Just') {
-										if (_v1.a === 'insert') {
-											var _v2 = _v1.b;
-											var message = _v1.c.a;
+									if (_v4.c.$ === 'Just') {
+										if (_v4.a === 'insert') {
+											var _v5 = _v4.b;
+											var message = _v4.c.a;
 											return $elm$core$Result$Ok(
 												$author$project$Main$InputTodoEntry(
 													{message: message}));
 										} else {
-											break _v1$4;
+											break _v4$4;
 										}
 									} else {
-										if (_v1.a === 'sync') {
-											var _v4 = _v1.b;
-											var _v5 = _v1.c;
+										if (_v4.a === 'sync') {
+											var _v7 = _v4.b;
+											var _v8 = _v4.c;
 											return $elm$core$Result$Ok($author$project$Main$SyncTodoEntry);
 										} else {
-											break _v1$4;
+											break _v4$4;
 										}
 									}
 								}
@@ -4431,38 +4437,38 @@ var $author$project$Main$handleInput = A2(
 							return $elm$core$Result$Err(
 								$author$project$DTT$Data$Error$WrongInputFormat(form));
 						case 'secrets':
-							var _v6 = _Utils_Tuple3(action, id, content);
-							_v6$3:
+							var _v9 = _Utils_Tuple3(action, id, content);
+							_v9$3:
 							while (true) {
-								if (_v6.b.$ === 'Nothing') {
-									if (_v6.c.$ === 'Just') {
-										switch (_v6.a) {
+								if (_v9.b.$ === 'Nothing') {
+									if (_v9.c.$ === 'Just') {
+										switch (_v9.a) {
 											case 'insert':
-												var _v7 = _v6.b;
-												var secret = _v6.c.a;
+												var _v10 = _v9.b;
+												var secret = _v9.c.a;
 												return $elm$core$Result$Ok(
 													$author$project$Main$InsertSecret(
 														{secret: secret}));
 											case 'delete':
-												var _v8 = _v6.b;
-												var secret = _v6.c.a;
+												var _v11 = _v9.b;
+												var secret = _v9.c.a;
 												return $elm$core$Result$Ok(
 													$author$project$Main$DeleteSecret(
 														{secret: secret}));
 											default:
-												break _v6$3;
+												break _v9$3;
 										}
 									} else {
-										if (_v6.a === 'sync') {
-											var _v9 = _v6.b;
-											var _v10 = _v6.c;
+										if (_v9.a === 'sync') {
+											var _v12 = _v9.b;
+											var _v13 = _v9.c;
 											return $elm$core$Result$Ok($author$project$Main$SyncSecret);
 										} else {
-											break _v6$3;
+											break _v9$3;
 										}
 									}
 								} else {
-									break _v6$3;
+									break _v9$3;
 								}
 							}
 							return $elm$core$Result$Err(
@@ -4516,20 +4522,17 @@ var $author$project$DTT$Data$Error$codec = $miniBill$elm_codec$Codec$buildObject
 			A3($miniBill$elm_codec$Codec$map, $elm$core$String$toLower, $elm$core$String$toLower, $miniBill$elm_codec$Codec$string),
 			$miniBill$elm_codec$Codec$object($author$project$DTT$Data$Error$ErrorJson))));
 var $author$project$DTT$Data$Secret$Secret = F3(
-	function (hash, user, match) {
-		return {hash: hash, match: match, user: user};
+	function (hash, user, raw) {
+		return {hash: hash, raw: raw, user: user};
 	});
-var $elm$json$Json$Decode$bool = _Json_decodeBool;
-var $elm$json$Json$Encode$bool = _Json_wrap;
-var $miniBill$elm_codec$Codec$bool = A2($miniBill$elm_codec$Codec$build, $elm$json$Json$Encode$bool, $elm$json$Json$Decode$bool);
 var $author$project$DTT$Data$Secret$codec = $miniBill$elm_codec$Codec$buildObject(
 	A4(
 		$miniBill$elm_codec$Codec$field,
-		'match',
+		'raw',
 		function ($) {
-			return $.match;
+			return $.raw;
 		},
-		$miniBill$elm_codec$Codec$bool,
+		$miniBill$elm_codec$Codec$maybe($miniBill$elm_codec$Codec$string),
 		A4(
 			$miniBill$elm_codec$Codec$field,
 			'user',
@@ -4665,15 +4668,43 @@ var $elm$core$List$filter = F2(
 			_List_Nil,
 			list);
 	});
-var $Orasund$elm_jsonstore$Jsonstore$bool = $Orasund$elm_jsonstore$Jsonstore$Json(
-	_Utils_Tuple2($elm$json$Json$Decode$bool, $elm$json$Json$Encode$bool));
+var $Orasund$elm_jsonstore$Jsonstore$withMaybe = F4(
+	function (name, _v0, value, _v1) {
+		var json = _v0.a;
+		var _v2 = _v1.a;
+		var d = _v2.a;
+		var e = _v2.b;
+		return $Orasund$elm_jsonstore$Jsonstore$JsonObject(
+			_Utils_Tuple2(
+				A3(
+					$elm$json$Json$Decode$map2,
+					F2(
+						function (f, fun) {
+							return fun(f);
+						}),
+					$elm$json$Json$Decode$maybe(
+						A2($elm$json$Json$Decode$field, name, json.a)),
+					d),
+				A2(
+					$elm$core$List$cons,
+					_Utils_Tuple2(
+						name,
+						function (o) {
+							return A2(
+								$elm$core$Basics$composeR,
+								$elm$core$Maybe$map(json.b),
+								$elm$core$Maybe$withDefault($elm$json$Json$Encode$null))(
+								value(o));
+						}),
+					e)));
+	});
 var $author$project$DTT$Data$Secret$json = $Orasund$elm_jsonstore$Jsonstore$toJson(
 	A4(
-		$Orasund$elm_jsonstore$Jsonstore$with,
-		'match',
-		$Orasund$elm_jsonstore$Jsonstore$bool,
+		$Orasund$elm_jsonstore$Jsonstore$withMaybe,
+		'raw',
+		$Orasund$elm_jsonstore$Jsonstore$string,
 		function ($) {
-			return $.match;
+			return $.raw;
 		},
 		A4(
 			$Orasund$elm_jsonstore$Jsonstore$with,
@@ -4701,6 +4732,7 @@ var $author$project$DTT$Data$Secret$getListResponse = A2(
 		_Utils_ap($author$project$DTT$Data$url, $author$project$DTT$String$secrets),
 		$Orasund$elm_jsonstore$Jsonstore$decode(
 			$Orasund$elm_jsonstore$Jsonstore$dict($author$project$DTT$Data$Secret$json))));
+var $elm$core$Basics$neq = _Utils_notEqual;
 var $author$project$DTT$Page$Secrets$getList = function (config) {
 	return A2(
 		$elm$core$Task$mapError,
@@ -4710,8 +4742,8 @@ var $author$project$DTT$Page$Secrets$getList = function (config) {
 			$elm$core$List$filter(
 				function (_v0) {
 					var user = _v0.user;
-					var match = _v0.match;
-					return _Utils_eq(user, config.user) || match;
+					var raw = _v0.raw;
+					return _Utils_eq(user, config.user) || (!_Utils_eq(raw, $elm$core$Maybe$Nothing));
 				}),
 			$author$project$DTT$Data$Secret$getListResponse));
 };
@@ -5282,11 +5314,86 @@ var $billstclair$elm_sha256$Sha256$hash = F2(
 var $billstclair$elm_sha256$Sha256$sha224 = function (string) {
 	return A2($billstclair$elm_sha256$Sha256$hash, string, true);
 };
-var $elm$core$Basics$always = F2(
-	function (a, _v0) {
-		return a;
+var $author$project$DTT$Page$Secrets$delete = function (config) {
+	return A2(
+		$elm$core$Basics$composeR,
+		$elm$core$String$toLower,
+		A2(
+			$elm$core$Basics$composeR,
+			$billstclair$elm_sha256$Sha256$sha224,
+			function (hash) {
+				return A2(
+					$elm$core$Task$andThen,
+					function (_v1) {
+						return $author$project$DTT$Page$Secrets$getList(config);
+					},
+					A2(
+						$elm$core$Task$andThen,
+						function (maybeEntry) {
+							if (maybeEntry.$ === 'Just') {
+								var user = maybeEntry.a.user;
+								var raw = maybeEntry.a.raw;
+								return _Utils_eq(raw, $elm$core$Maybe$Nothing) ? (_Utils_eq(user, config.user) ? A2(
+									$elm$core$Task$mapError,
+									$author$project$DTT$Page$Secrets$HttpError,
+									$author$project$DTT$Data$Secret$deleteResponse(hash)) : $elm$core$Task$succeed(_Utils_Tuple0)) : $elm$core$Task$fail($author$project$DTT$Page$Secrets$IsMatched);
+							} else {
+								return $elm$core$Task$succeed(_Utils_Tuple0);
+							}
+						},
+						A2(
+							$elm$core$Task$mapError,
+							$author$project$DTT$Page$Secrets$HttpError,
+							$author$project$DTT$Data$Secret$getResponse(hash))));
+			}));
+};
+var $author$project$DTT$Page$Todo$NoPermission = {$: 'NoPermission'};
+var $author$project$DTT$Data$TodoEntry$deleteResponse = function (id) {
+	return $Orasund$elm_jsonstore$Jsonstore$delete($author$project$DTT$Data$url + ($author$project$DTT$String$todo + ('/' + id)));
+};
+var $author$project$DTT$Data$TodoEntry$getResponse = function (id) {
+	return A2(
+		$Orasund$elm_jsonstore$Jsonstore$get,
+		$author$project$DTT$Data$url + ($author$project$DTT$String$todo + ('/' + id)),
+		$Orasund$elm_jsonstore$Jsonstore$decode($author$project$DTT$Data$TodoEntry$json));
+};
+var $author$project$DTT$Page$Todo$deleteEntry = F2(
+	function (config, id) {
+		return A2(
+			$elm$core$Task$andThen,
+			function (_v1) {
+				return A2($elm$core$Task$mapError, $author$project$DTT$Page$Todo$HttpError, $author$project$DTT$Data$TodoEntry$getListResponse);
+			},
+			A2(
+				$elm$core$Task$andThen,
+				function (maybeEntry) {
+					if (maybeEntry.$ === 'Just') {
+						var user = maybeEntry.a.user;
+						return _Utils_eq(user, config.user) ? A2(
+							$elm$core$Task$mapError,
+							$author$project$DTT$Page$Todo$HttpError,
+							$author$project$DTT$Data$TodoEntry$deleteResponse(id)) : $elm$core$Task$fail($author$project$DTT$Page$Todo$NoPermission);
+					} else {
+						return $elm$core$Task$succeed(_Utils_Tuple0);
+					}
+				},
+				A2(
+					$elm$core$Task$mapError,
+					$author$project$DTT$Page$Todo$HttpError,
+					$author$project$DTT$Data$TodoEntry$getResponse(id))));
 	});
-var $author$project$DTT$String$match = '/match';
+var $miniBill$elm_codec$Codec$encodeToValue = function (codec) {
+	return $miniBill$elm_codec$Codec$encoder(codec);
+};
+var $author$project$DTT$Data$OutputForm$empty = {error: $elm$core$Maybe$Nothing, secrets: $elm$core$Maybe$Nothing, todo: $elm$core$Maybe$Nothing};
+var $author$project$DTT$Data$OutputForm$error = function (err) {
+	return _Utils_update(
+		$author$project$DTT$Data$OutputForm$empty,
+		{
+			error: $elm$core$Maybe$Just(err)
+		});
+};
+var $author$project$Main$fromElm = _Platform_outgoingPort('fromElm', $elm$core$Basics$identity);
 var $Orasund$elm_jsonstore$Jsonstore$encode = function (_v0) {
 	var _v1 = _v0.a;
 	var fun = _v1.b;
@@ -5310,152 +5417,57 @@ var $Orasund$elm_jsonstore$Jsonstore$insert = F2(
 				url: url
 			});
 	});
-var $Orasund$elm_jsonstore$Jsonstore$update = F3(
-	function (url, json, fun) {
-		return A2(
-			$elm$core$Task$andThen,
-			A2(
-				$elm$core$Basics$composeR,
-				$elm$core$Maybe$map(
-					A2(
-						$elm$core$Basics$composeR,
-						fun,
-						A2(
-							$elm$core$Basics$composeR,
-							$Orasund$elm_jsonstore$Jsonstore$encode(json),
-							$Orasund$elm_jsonstore$Jsonstore$insert(url)))),
-				$elm$core$Maybe$withDefault(
-					$elm$core$Task$succeed(_Utils_Tuple0))),
-			A2(
-				$Orasund$elm_jsonstore$Jsonstore$get,
-				url,
-				$Orasund$elm_jsonstore$Jsonstore$decode(json)));
-	});
-var $author$project$DTT$Data$Secret$updateMatchResponse = F2(
-	function (hash, b) {
-		return A3(
-			$Orasund$elm_jsonstore$Jsonstore$update,
-			$author$project$DTT$Data$url + ($author$project$DTT$String$secrets + ('/' + (hash + $author$project$DTT$String$match))),
-			$Orasund$elm_jsonstore$Jsonstore$bool,
-			$elm$core$Basics$always(b));
-	});
-var $author$project$DTT$Page$Secrets$delete = function (config) {
-	return A2(
-		$elm$core$Basics$composeR,
-		$billstclair$elm_sha256$Sha256$sha224,
-		function (hash) {
-			return A2(
-				$elm$core$Task$andThen,
-				function (_v1) {
-					return $author$project$DTT$Page$Secrets$getList(config);
-				},
-				A2(
-					$elm$core$Task$andThen,
-					function (maybeEntry) {
-						if (maybeEntry.$ === 'Just') {
-							var user = maybeEntry.a.user;
-							var match = maybeEntry.a.match;
-							return _Utils_eq(user, config.user) ? (match ? $elm$core$Task$fail($author$project$DTT$Page$Secrets$IsMatched) : A2(
-								$elm$core$Task$mapError,
-								$author$project$DTT$Page$Secrets$HttpError,
-								$author$project$DTT$Data$Secret$deleteResponse(hash))) : A2(
-								$elm$core$Task$mapError,
-								$author$project$DTT$Page$Secrets$HttpError,
-								A2($author$project$DTT$Data$Secret$updateMatchResponse, hash, false));
-						} else {
-							return $elm$core$Task$succeed(_Utils_Tuple0);
-						}
-					},
-					A2(
-						$elm$core$Task$mapError,
-						$author$project$DTT$Page$Secrets$HttpError,
-						$author$project$DTT$Data$Secret$getResponse(hash))));
-		});
-};
-var $author$project$DTT$Page$Todo$NoPermission = {$: 'NoPermission'};
-var $author$project$DTT$Data$TodoEntry$deleteResponse = function (id) {
-	return $Orasund$elm_jsonstore$Jsonstore$delete($author$project$DTT$Data$url + ($author$project$DTT$String$todo + ('/' + id)));
-};
-var $author$project$DTT$Data$TodoEntry$getResponse = function (id) {
-	return A2(
-		$Orasund$elm_jsonstore$Jsonstore$get,
-		$author$project$DTT$Data$url + ($author$project$DTT$String$todo + ('/' + id)),
-		$Orasund$elm_jsonstore$Jsonstore$decode($author$project$DTT$Data$TodoEntry$json));
-};
-var $author$project$DTT$Page$Todo$deleteEntry = F3(
-	function (config, msg, id) {
-		return A2(
-			$elm$core$Task$attempt,
-			msg,
-			A2(
-				$elm$core$Task$andThen,
-				function (_v1) {
-					return A2($elm$core$Task$mapError, $author$project$DTT$Page$Todo$HttpError, $author$project$DTT$Data$TodoEntry$getListResponse);
-				},
-				A2(
-					$elm$core$Task$andThen,
-					function (maybeEntry) {
-						if (maybeEntry.$ === 'Just') {
-							var user = maybeEntry.a.user;
-							return _Utils_eq(user, config.user) ? A2(
-								$elm$core$Task$mapError,
-								$author$project$DTT$Page$Todo$HttpError,
-								$author$project$DTT$Data$TodoEntry$deleteResponse(id)) : $elm$core$Task$fail($author$project$DTT$Page$Todo$NoPermission);
-						} else {
-							return $elm$core$Task$succeed(_Utils_Tuple0);
-						}
-					},
-					A2(
-						$elm$core$Task$mapError,
-						$author$project$DTT$Page$Todo$HttpError,
-						$author$project$DTT$Data$TodoEntry$getResponse(id)))));
-	});
-var $miniBill$elm_codec$Codec$encodeToValue = function (codec) {
-	return $miniBill$elm_codec$Codec$encoder(codec);
-};
-var $author$project$DTT$Data$OutputForm$empty = {error: $elm$core$Maybe$Nothing, secrets: $elm$core$Maybe$Nothing, todo: $elm$core$Maybe$Nothing};
-var $author$project$DTT$Data$OutputForm$error = function (err) {
-	return _Utils_update(
-		$author$project$DTT$Data$OutputForm$empty,
-		{
-			error: $elm$core$Maybe$Just(err)
-		});
-};
-var $author$project$Main$fromElm = _Platform_outgoingPort('fromElm', $elm$core$Basics$identity);
 var $author$project$DTT$Data$Secret$insertResponse = function (entry) {
 	return A2(
 		$Orasund$elm_jsonstore$Jsonstore$insert,
 		$author$project$DTT$Data$url + ($author$project$DTT$String$secrets + ('/' + entry.hash)),
 		A2($Orasund$elm_jsonstore$Jsonstore$encode, $author$project$DTT$Data$Secret$json, entry));
 };
-var $author$project$DTT$Page$Secrets$insert = function (config) {
-	return A2(
-		$elm$core$Basics$composeR,
-		$billstclair$elm_sha256$Sha256$sha224,
-		A2(
-			$elm$core$Basics$composeR,
-			function (hash) {
-				return A2(
-					$elm$core$Task$andThen,
-					function (maybeEntry) {
-						if (maybeEntry.$ === 'Just') {
-							var user = maybeEntry.a.user;
-							return _Utils_eq(user, config.user) ? $elm$core$Task$succeed(_Utils_Tuple0) : A2($author$project$DTT$Data$Secret$updateMatchResponse, hash, true);
-						} else {
-							return $author$project$DTT$Data$Secret$insertResponse(
-								{hash: hash, match: false, user: config.user});
-						}
-					},
-					$author$project$DTT$Data$Secret$getResponse(hash));
+var $author$project$DTT$String$raw = '/raw';
+var $author$project$DTT$Data$Secret$updateRawResponse = function (_v0) {
+	var hash = _v0.hash;
+	var raw = _v0.raw;
+	if (raw.$ === 'Just') {
+		var r = raw.a;
+		return A2(
+			$Orasund$elm_jsonstore$Jsonstore$insert,
+			$author$project$DTT$Data$url + ($author$project$DTT$String$secrets + ('/' + (hash + $author$project$DTT$String$raw))),
+			A2($Orasund$elm_jsonstore$Jsonstore$encode, $Orasund$elm_jsonstore$Jsonstore$string, r));
+	} else {
+		return $Orasund$elm_jsonstore$Jsonstore$delete($author$project$DTT$Data$url + ($author$project$DTT$String$secrets + ('/' + (hash + $author$project$DTT$String$raw))));
+	}
+};
+var $author$project$DTT$Page$Secrets$insert = F2(
+	function (config, raw) {
+		return A2(
+			$elm$core$Task$andThen,
+			function (_v1) {
+				return $author$project$DTT$Page$Secrets$getList(config);
 			},
 			A2(
-				$elm$core$Basics$composeR,
-				$elm$core$Task$mapError($author$project$DTT$Page$Secrets$HttpError),
-				$elm$core$Task$andThen(
-					function (_v1) {
-						return $author$project$DTT$Page$Secrets$getList(config);
-					}))));
-};
+				$elm$core$Task$mapError,
+				$author$project$DTT$Page$Secrets$HttpError,
+				function (hash) {
+					return A2(
+						$elm$core$Task$andThen,
+						function (maybeEntry) {
+							if (maybeEntry.$ === 'Just') {
+								var user = maybeEntry.a.user;
+								return _Utils_eq(user, config.user) ? $elm$core$Task$succeed(_Utils_Tuple0) : $author$project$DTT$Data$Secret$updateRawResponse(
+									{
+										hash: hash,
+										raw: $elm$core$Maybe$Just(raw)
+									});
+							} else {
+								return $author$project$DTT$Data$Secret$insertResponse(
+									{hash: hash, raw: $elm$core$Maybe$Nothing, user: config.user});
+							}
+						},
+						$author$project$DTT$Data$Secret$getResponse(hash));
+				}(
+					$billstclair$elm_sha256$Sha256$sha224(
+						$elm$core$String$toLower(raw)))));
+	});
 var $elm$random$Random$Generator = function (a) {
 	return {$: 'Generator', a: a};
 };
@@ -5519,24 +5531,21 @@ var $author$project$DTT$Data$TodoEntry$insertResponse = function (entry) {
 		$author$project$DTT$Data$url + ($author$project$DTT$String$todo + ('/' + entry.id)),
 		A2($Orasund$elm_jsonstore$Jsonstore$encode, $author$project$DTT$Data$TodoEntry$json, entry));
 };
-var $author$project$DTT$Page$Todo$insertEntry = F3(
-	function (config, msg, message) {
+var $author$project$DTT$Page$Todo$insertEntry = F2(
+	function (config, message) {
 		return A2(
 			$elm$random$Random$map,
 			function (id) {
 				return A2(
-					$elm$core$Task$attempt,
-					msg,
+					$elm$core$Task$mapError,
+					$author$project$DTT$Page$Todo$HttpError,
 					A2(
-						$elm$core$Task$mapError,
-						$author$project$DTT$Page$Todo$HttpError,
-						A2(
-							$elm$core$Task$andThen,
-							function (_v0) {
-								return $author$project$DTT$Data$TodoEntry$getListResponse;
-							},
-							$author$project$DTT$Data$TodoEntry$insertResponse(
-								{id: id, lastUpdated: config.currentTime, message: message, user: config.user}))));
+						$elm$core$Task$andThen,
+						function (_v0) {
+							return $author$project$DTT$Data$TodoEntry$getListResponse;
+						},
+						$author$project$DTT$Data$TodoEntry$insertResponse(
+							{id: id, lastUpdated: config.currentTime, message: message, user: config.user})));
 			},
 			$author$project$DTT$Data$Id$generate);
 	});
@@ -5604,39 +5613,36 @@ var $author$project$DTT$Data$OutputForm$todo = function (list) {
 			todo: $elm$core$Maybe$Just(list)
 		});
 };
-var $author$project$DTT$Page$Todo$updateEntry = F3(
-	function (config, msg, _v0) {
+var $author$project$DTT$Page$Todo$updateEntry = F2(
+	function (config, _v0) {
 		var id = _v0.id;
 		var message = _v0.message;
 		return A2(
-			$elm$core$Task$attempt,
-			msg,
+			$elm$core$Task$andThen,
+			function (_v2) {
+				return A2($elm$core$Task$mapError, $author$project$DTT$Page$Todo$HttpError, $author$project$DTT$Data$TodoEntry$getListResponse);
+			},
 			A2(
 				$elm$core$Task$andThen,
-				function (_v2) {
-					return A2($elm$core$Task$mapError, $author$project$DTT$Page$Todo$HttpError, $author$project$DTT$Data$TodoEntry$getListResponse);
+				function (maybeEntry) {
+					if (maybeEntry.$ === 'Just') {
+						var entry = maybeEntry.a;
+						var user = entry.user;
+						return _Utils_eq(user, config.user) ? A2(
+							$elm$core$Task$mapError,
+							$author$project$DTT$Page$Todo$HttpError,
+							$author$project$DTT$Data$TodoEntry$insertResponse(
+								_Utils_update(
+									entry,
+									{lastUpdated: config.currentTime, message: message}))) : $elm$core$Task$fail($author$project$DTT$Page$Todo$NoPermission);
+					} else {
+						return $elm$core$Task$succeed(_Utils_Tuple0);
+					}
 				},
 				A2(
-					$elm$core$Task$andThen,
-					function (maybeEntry) {
-						if (maybeEntry.$ === 'Just') {
-							var entry = maybeEntry.a;
-							var user = entry.user;
-							return _Utils_eq(user, config.user) ? A2(
-								$elm$core$Task$mapError,
-								$author$project$DTT$Page$Todo$HttpError,
-								$author$project$DTT$Data$TodoEntry$insertResponse(
-									_Utils_update(
-										entry,
-										{lastUpdated: config.currentTime, message: message}))) : $elm$core$Task$fail($author$project$DTT$Page$Todo$NoPermission);
-						} else {
-							return $elm$core$Task$succeed(_Utils_Tuple0);
-						}
-					},
-					A2(
-						$elm$core$Task$mapError,
-						$author$project$DTT$Page$Todo$HttpError,
-						$author$project$DTT$Data$TodoEntry$getResponse(id)))));
+					$elm$core$Task$mapError,
+					$author$project$DTT$Page$Todo$HttpError,
+					$author$project$DTT$Data$TodoEntry$getResponse(id))));
 	});
 var $author$project$Main$update = F2(
 	function (msg, model) {
@@ -5650,7 +5656,7 @@ var $author$project$Main$update = F2(
 					$elm$core$Platform$Cmd$batch(
 						_List_fromArray(
 							[
-								$author$project$DTT$Page$Todo$getList($author$project$Main$GotTodoResponse),
+								A2($elm$core$Task$attempt, $author$project$Main$GotTodoResponse, $author$project$DTT$Page$Todo$getList),
 								A2(
 								$elm$core$Task$attempt,
 								$author$project$Main$GotSecretResponse,
@@ -5725,7 +5731,7 @@ var $author$project$Main$update = F2(
 							var message = input.a.message;
 							var _v7 = A2(
 								$elm$random$Random$step,
-								A3($author$project$DTT$Page$Todo$insertEntry, model, $author$project$Main$GotTodoResponse, message),
+								A2($author$project$DTT$Page$Todo$insertEntry, model, message),
 								model.seed);
 							var cmd = _v7.a;
 							var seed = _v7.b;
@@ -5733,21 +5739,27 @@ var $author$project$Main$update = F2(
 								_Utils_update(
 									model,
 									{seed: seed}),
-								cmd);
+								A2($elm$core$Task$attempt, $author$project$Main$GotTodoResponse, cmd));
 						case 'SyncTodoEntry':
 							return _Utils_Tuple2(
 								model,
-								$author$project$DTT$Page$Todo$getList($author$project$Main$GotTodoResponse));
+								A2($elm$core$Task$attempt, $author$project$Main$GotTodoResponse, $author$project$DTT$Page$Todo$getList));
 						case 'DeleteTodoEntry':
 							var id = input.a.id;
 							return _Utils_Tuple2(
 								model,
-								A3($author$project$DTT$Page$Todo$deleteEntry, model, $author$project$Main$GotTodoResponse, id));
+								A2(
+									$elm$core$Task$attempt,
+									$author$project$Main$GotTodoResponse,
+									A2($author$project$DTT$Page$Todo$deleteEntry, model, id)));
 						case 'UpdateTodoEntry':
 							var _arguments = input.a;
 							return _Utils_Tuple2(
 								model,
-								A3($author$project$DTT$Page$Todo$updateEntry, model, $author$project$Main$GotTodoResponse, _arguments));
+								A2(
+									$elm$core$Task$attempt,
+									$author$project$Main$GotTodoResponse,
+									A2($author$project$DTT$Page$Todo$updateEntry, model, _arguments)));
 						case 'InsertSecret':
 							var secret = input.a.secret;
 							return _Utils_Tuple2(
@@ -5764,13 +5776,28 @@ var $author$project$Main$update = F2(
 									$elm$core$Task$attempt,
 									$author$project$Main$GotSecretResponse,
 									A2($author$project$DTT$Page$Secrets$delete, model, secret)));
-						default:
+						case 'SyncSecret':
 							return _Utils_Tuple2(
 								model,
 								A2(
 									$elm$core$Task$attempt,
 									$author$project$Main$GotSecretResponse,
 									$author$project$DTT$Page$Secrets$getList(model)));
+						default:
+							return _Utils_Tuple2(
+								model,
+								A2(
+									$elm$core$Task$attempt,
+									$author$project$Main$GotTodoResponse,
+									A2(
+										$elm$core$Task$andThen,
+										function (_v8) {
+											return $author$project$DTT$Page$Todo$getList;
+										},
+										A2(
+											$elm$core$Task$mapError,
+											$author$project$DTT$Page$Todo$HttpError,
+											$Orasund$elm_jsonstore$Jsonstore$delete($author$project$DTT$Data$url)))));
 					}
 				} else {
 					var err = result.a;
