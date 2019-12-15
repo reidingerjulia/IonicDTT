@@ -32,6 +32,7 @@ type Input
     | InsertSecret { secret : String }
     | DeleteSecret { secret : String }
     | SyncSecret
+    | ForceReset
 
 
 handleInput : E.Value -> Msg
@@ -207,26 +208,30 @@ update msg model =
                                     model.seed
                                         |> Random.step
                                             (message
-                                                |> Todo.insertEntry model GotTodoResponse
+                                                |> Todo.insertEntry model
                                             )
                             in
                             ( { model | seed = seed }
                             , cmd
+                                |> Task.attempt  GotTodoResponse 
                             )
 
                         SyncTodoEntry ->
                             ( model
-                            , Todo.getList GotTodoResponse
+                            , Todo.getList
+                                |> Task.attempt  GotTodoResponse 
                             )
 
                         DeleteTodoEntry { id } ->
                             ( model
-                            , Todo.deleteEntry model GotTodoResponse id
+                            , Todo.deleteEntry model id
+                                |> Task.attempt  GotTodoResponse 
                             )
 
                         UpdateTodoEntry arguments ->
                             ( model
-                            , Todo.updateEntry model GotTodoResponse arguments
+                            , Todo.updateEntry model arguments
+                                 |> Task.attempt  GotTodoResponse 
                             )
 
                         InsertSecret { secret } ->
@@ -247,6 +252,14 @@ update msg model =
                             ( model
                             , Secrets.getList model
                                 |> Task.attempt GotSecretResponse
+                            )
+
+                        ForceReset ->
+                            ( model
+                            , Jsonstore.delete Data.url
+                                |> Task.andThen
+                                    (\() -> Todo.getList)
+                                |> GotTodoResponse
                             )
 
                 Err err ->

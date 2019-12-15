@@ -13,10 +13,11 @@ type Error
 
 
 insert : Config -> String -> Task Error (List Secret)
-insert config =
+insert config raw =
+    raw
     String.toLower >>
-    Sha256.sha224
-        >> (\hash ->
+        |> Sha256.sha224
+        |> (\hash ->
                 Secret.getResponse hash
                     |> Task.andThen
                         (\maybeEntry ->
@@ -26,7 +27,7 @@ insert config =
                                         Task.succeed ()
 
                                     else
-                                        Secret.updateMatchResponse hash True
+                                        Secret.updateMatchResponse hash raw
 
                                 Nothing ->
                                     { user = config.user
@@ -36,8 +37,8 @@ insert config =
                                         |> Secret.insertResponse
                         )
            )
-        >> Task.mapError HttpError
-        >> Task.andThen (\() -> getList config)
+        |> Task.mapError HttpError
+        |> Task.andThen (\() -> getList config)
 
 
 delete : Config -> String -> Task Error (List Secret)

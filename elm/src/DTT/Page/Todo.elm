@@ -5,7 +5,7 @@ import DTT.Data.Id as Id exposing (Id)
 import DTT.Data.TodoEntry as TodoEntry exposing (TodoEntry)
 import Http
 import Random exposing (Generator)
-import Task
+import Task exposing (Task)
 
 
 type Error
@@ -13,8 +13,8 @@ type Error
     | NoPermission
 
 
-insertEntry : Config -> (Result Error (List TodoEntry) -> msg) -> String -> Generator (Cmd msg)
-insertEntry config msg message =
+insertEntry : Config -> String -> Generator (Task Error (List TodoEntry))
+insertEntry config message =
     Id.generate
         |> Random.map
             (\id ->
@@ -26,12 +26,11 @@ insertEntry config msg message =
                     |> TodoEntry.insertResponse
                     |> Task.andThen (\() -> TodoEntry.getListResponse)
                     |> Task.mapError HttpError
-                    |> Task.attempt msg
             )
 
 
-deleteEntry : Config -> (Result Error (List TodoEntry) -> msg) -> Id -> Cmd msg
-deleteEntry config msg id =
+deleteEntry : Config -> Id -> Task Error (List TodoEntry)
+deleteEntry config id =
     TodoEntry.getResponse id
         |> Task.mapError HttpError
         |> Task.andThen
@@ -49,15 +48,13 @@ deleteEntry config msg id =
                         Task.succeed ()
             )
         |> Task.andThen (\() -> TodoEntry.getListResponse |> Task.mapError HttpError)
-        |> Task.attempt msg
 
 
 updateEntry :
     Config
-    -> (Result Error (List TodoEntry) -> msg)
     -> { id : Id, message : String }
-    -> Cmd msg
-updateEntry config msg { id, message } =
+    -> Task Error (List TodoEntry)
+updateEntry config { id, message } =
     TodoEntry.getResponse id
         |> Task.mapError HttpError
         |> Task.andThen
@@ -79,11 +76,9 @@ updateEntry config msg { id, message } =
                         Task.succeed ()
             )
         |> Task.andThen (\() -> TodoEntry.getListResponse |> Task.mapError HttpError)
-        |> Task.attempt msg
 
 
-getList : (Result Error (List TodoEntry) -> msg) -> Cmd msg
-getList msg =
+getList : Task Error (List TodoEntry)
+getList =
     TodoEntry.getListResponse
         |> Task.mapError HttpError
-        |> Task.attempt msg

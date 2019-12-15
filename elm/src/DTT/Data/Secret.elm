@@ -13,7 +13,7 @@ import Time exposing (Posix)
 type alias Secret =
     { hash : String
     , user : String
-    , match : Bool
+    , raw : Maybe String
     }
 
 
@@ -22,7 +22,7 @@ json =
     Jsonstore.object Secret
         |> Jsonstore.with "hash" Jsonstore.string .hash
         |> Jsonstore.with "user" Jsonstore.string .user
-        |> Jsonstore.with "match" Jsonstore.bool .match
+        |> Jsonstore.withMaybe "raw" Jsonstore.string .raw
         |> Jsonstore.toJson
 
 
@@ -31,7 +31,7 @@ codec =
     Codec.object Secret
         |> Codec.field "hash" .hash Codec.string
         |> Codec.field "user" .user Codec.string
-        |> Codec.field "match" .match Codec.bool
+        |> Codec.field "raw" .raw (Codec.maybe Codec.string)
         |> Codec.buildObject
 
 
@@ -58,12 +58,12 @@ getListResponse =
         |> Task.map (Maybe.map Dict.values >> Maybe.withDefault [])
 
 
-updateMatchResponse : String -> Bool -> Task Http.Error ()
-updateMatchResponse hash b =
+updateRawResponse : { hash : String, raw : String } -> Task Http.Error ()
+updateRawResponse { hash, raw } =
     Jsonstore.update
         (Data.url ++ String.secrets ++ "/" ++ hash ++ String.match)
-        Jsonstore.bool
-        (always <| b)
+        Jsonstore.string
+        (always <| raw)
 
 
 deleteResponse : String -> Task Http.Error ()
