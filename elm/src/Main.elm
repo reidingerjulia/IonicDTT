@@ -1,16 +1,15 @@
 port module Main exposing (main)
 
-import Codec exposing (Codec)
+import Codec
 import DTT.Data as Data
 import DTT.Data.Config exposing (Config)
 import DTT.Data.Error as Error exposing (Error(..))
-import DTT.Data.InputForm as InputForm exposing (InputForm)
-import DTT.Data.OutputForm as OutputForm exposing (OutputForm)
-import DTT.Data.Secret as Secret exposing (Secret)
-import DTT.Data.TodoEntry as TodoEntry exposing (TodoEntry)
+import DTT.Data.InputForm as InputForm
+import DTT.Data.OutputForm as OutputForm
+import DTT.Data.Secret exposing (Secret)
+import DTT.Data.TodoEntry exposing (TodoEntry)
 import DTT.Page.Secrets as Secrets
 import DTT.Page.Todo as Todo
-import Http
 import Json.Decode as D
 import Json.Encode as E
 import Jsonstore
@@ -24,15 +23,15 @@ port toElm : (E.Value -> msg) -> Sub msg
 
 
 type Input
-    = InputTodoEntry { message : String }
+    = InputTodoEntry String
     | SyncTodoEntry
-    | DeleteTodoEntry { id : String }
+    | DeleteTodoEntry String
     | UpdateTodoEntry
         { id : String
         , message : String
         }
-    | InsertSecret { secret : String }
-    | DeleteSecret { secret : String }
+    | InsertSecret String
+    | DeleteSecret String
     | SyncSecret
     | ForceReset
 
@@ -56,10 +55,10 @@ handleInput =
                     "todo" ->
                         case ( action, id, content ) of
                             ( "insert", Nothing, Just message ) ->
-                                Ok <| InputTodoEntry <| { message = message }
+                                Ok <| InputTodoEntry <| message
 
                             ( "delete", Just i, Nothing ) ->
-                                Ok <| DeleteTodoEntry <| { id = i }
+                                Ok <| DeleteTodoEntry <| i
 
                             ( "update", Just i, Just message ) ->
                                 Ok <|
@@ -77,10 +76,10 @@ handleInput =
                     "secrets" ->
                         case ( action, id, content ) of
                             ( "insert", Nothing, Just secret ) ->
-                                Ok <| InsertSecret <| { secret = secret }
+                                Ok <| InsertSecret <| secret
 
                             ( "delete", Nothing, Just secret ) ->
-                                Ok <| DeleteSecret <| { secret = secret }
+                                Ok <| DeleteSecret <| secret
 
                             ( "sync", Nothing, Nothing ) ->
                                 Ok <| SyncSecret
@@ -95,28 +94,6 @@ handleInput =
 
 
 port fromElm : E.Value -> Cmd msg
-
-
-type Output
-    = ErrorOccurred Error
-    | GotTodoList (List TodoEntry)
-    | GotSecretList (List Secret)
-
-
-handleOutput : Output -> E.Value
-handleOutput output =
-    Codec.encodeToValue OutputForm.codec <|
-        case output of
-            ErrorOccurred error ->
-                error
-                    |> Error.toJsError
-                    |> OutputForm.error
-
-            GotTodoList list ->
-                OutputForm.todo list
-
-            GotSecretList list ->
-                OutputForm.secrets list
 
 
 type alias Flag =
@@ -212,7 +189,7 @@ update msg model =
             case result of
                 Ok input ->
                     case input of
-                        InputTodoEntry { message } ->
+                        InputTodoEntry message ->
                             let
                                 ( cmd, seed ) =
                                     model.seed
@@ -232,7 +209,7 @@ update msg model =
                                 |> Task.attempt GotTodoResponse
                             )
 
-                        DeleteTodoEntry { id } ->
+                        DeleteTodoEntry id ->
                             ( model
                             , Todo.deleteEntry model id
                                 |> Task.attempt GotTodoResponse
@@ -244,14 +221,14 @@ update msg model =
                                 |> Task.attempt GotTodoResponse
                             )
 
-                        InsertSecret { secret } ->
+                        InsertSecret secret ->
                             ( model
                             , secret
                                 |> Secrets.insert model
                                 |> Task.attempt GotSecretResponse
                             )
 
-                        DeleteSecret { secret } ->
+                        DeleteSecret secret ->
                             ( model
                             , secret
                                 |> Secrets.delete model
@@ -286,7 +263,8 @@ update msg model =
 subscriptions : Model -> Sub Msg
 subscriptions _ =
     Sub.batch
-        [ toElm handleInput
+        [ Time.every 10000 GotTime
+        , toElm handleInput
         ]
 
 

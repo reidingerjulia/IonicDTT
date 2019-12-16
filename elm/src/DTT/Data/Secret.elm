@@ -7,7 +7,6 @@ import Dict
 import Http
 import Jsonstore exposing (Json)
 import Task exposing (Task)
-import Time exposing (Posix)
 
 
 type alias Secret =

@@ -72,4 +72,4 @@ Will cause an error if the entry was not created by the user.
 * `lastUpdated` is given in unix time.
 
 Subscripes to a regular updating list of entries.
-The list will update every minute as well as after every method call.
+The list will update after every method call.
