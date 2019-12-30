@@ -14,3 +14,7 @@ secrets =
 raw : String
 raw =
     "/raw"
+
+budget : String
+budget =
+    "/budget"

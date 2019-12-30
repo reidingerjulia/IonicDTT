@@ -279,7 +279,7 @@ view model =
                           }
   in
     Framework.layout [] <|
-        Element.column Framework.container <|
+        Element.column (Framework.container) <|
             case model of
                 Waiting _ ->
                     List.map (Element.map WaitingSpecific)  <|

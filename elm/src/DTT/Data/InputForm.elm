@@ -20,6 +20,6 @@ codec =
         |> Codec.field "action"
             .action
             (Codec.string |> Codec.map String.toLower String.toLower)
-        |> Codec.field "id" .id (Codec.maybe Codec.string)
-        |> Codec.field "content" .content (Codec.maybe Codec.string)
+        |> Codec.optionalField "id" .id (Codec.string)
+        |> Codec.optionalField "content" .content (Codec.string)
         |> Codec.buildObject
