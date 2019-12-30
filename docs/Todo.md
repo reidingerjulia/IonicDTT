@@ -8,7 +8,7 @@
 { page : "todo"
 , action : "insert"
 , id : null
-, message : String
+, content : String
 }
 ```
 
@@ -20,7 +20,7 @@ Inserts a new entry in the todo list.
 { page : "todo"
 , action : "sync"
 , id : null
-, message : null
+, content : null
 }
 ```
 
@@ -32,7 +32,7 @@ Manually requests a synchronization with the database.
 { page : "todo"
 , action : "delete"
 , id : String
-, message : null
+, content : null
 }
 ```
 
@@ -46,7 +46,7 @@ Will cause an error if the entry was not created by the user.
 { page : "todo"
 , action : "update"
 , id : String
-, message : String
+, content : String
 }
 ```
 

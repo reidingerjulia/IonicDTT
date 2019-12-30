@@ -5,11 +5,6 @@ Initate the module using the following code snippet
 ```
 var app = Elm.Main.init({
   flags: flag
-  {
-    user: "julia",
-    currentTime: Date.now(),
-    initialSeed: Math.random()
-  }
 });
 ```
 
