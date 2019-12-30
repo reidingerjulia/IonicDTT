@@ -8,6 +8,7 @@ type alias InputForm =
     , action : String
     , id : Maybe String
     , content : Maybe String
+    , amount : Maybe Int
     }
 
 
@@ -20,6 +21,7 @@ codec =
         |> Codec.field "action"
             .action
             (Codec.string |> Codec.map String.toLower String.toLower)
-        |> Codec.field "id" .id (Codec.maybe Codec.string)
-        |> Codec.field "content" .content (Codec.maybe Codec.string)
+        |> Codec.optionalField "id" .id Codec.string
+        |> Codec.optionalField "content" .content Codec.string
+        |> Codec.optionalField "amount" .amount Codec.int
         |> Codec.buildObject

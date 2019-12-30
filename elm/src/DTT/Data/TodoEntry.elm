@@ -19,26 +19,14 @@ type alias TodoEntry =
     }
 
 
-jsonPosix : Json Posix
-jsonPosix =
-    Jsonstore.int
-        |> Jsonstore.map Time.millisToPosix Time.posixToMillis
-
-
 json : Json TodoEntry
 json =
     Jsonstore.object TodoEntry
         |> Jsonstore.with "id" Id.json .id
         |> Jsonstore.with "user" Jsonstore.string .user
         |> Jsonstore.with "message" Jsonstore.string .message
-        |> Jsonstore.with "lastUpdated" jsonPosix .lastUpdated
+        |> Jsonstore.with "lastUpdated" Data.jsonPosix .lastUpdated
         |> Jsonstore.toJson
-
-
-codecPosix : Codec Posix
-codecPosix =
-    Codec.int
-        |> Codec.map Time.millisToPosix Time.posixToMillis
 
 
 codec : Codec TodoEntry
@@ -47,7 +35,7 @@ codec =
         |> Codec.field "id" .id Id.codec
         |> Codec.field "user" .user Codec.string
         |> Codec.field "message" .message Codec.string
-        |> Codec.field "lastUpdated" .lastUpdated codecPosix
+        |> Codec.field "lastUpdated" .lastUpdated Data.codecPosix
         |> Codec.buildObject
 
 
