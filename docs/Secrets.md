@@ -8,7 +8,7 @@
 { page : "secrets"
 , action : "insert"
 , id : null
-, message : String
+, content : String
 }
 ```
 
@@ -21,7 +21,7 @@ be revealed. Once a secret is revealed it can not be deleted.
 { page : "secrets"
 , action : "delete"
 , id : null
-, message : String
+, content : String
 }
 ```
 
@@ -33,7 +33,7 @@ Deletes a secret that has not yet been matched.
 { page : "secrets"
 , action : "sync"
 , id : null
-, message : null
+, content : null
 }
 ```
 
