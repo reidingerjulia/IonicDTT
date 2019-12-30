@@ -6076,9 +6076,9 @@ var $author$project$Test$WrongFormat = function (a) {
 var $author$project$Test$WrongInput = function (a) {
 	return {$: 'WrongInput', a: a};
 };
-var $author$project$DTT$Data$InputForm$InputForm = F4(
-	function (page, action, id, content) {
-		return {action: action, content: content, id: id, page: page};
+var $author$project$DTT$Data$InputForm$InputForm = F5(
+	function (page, action, id, content, amount) {
+		return {action: action, amount: amount, content: content, id: id, page: page};
 	});
 var $miniBill$elm_codec$Codec$Codec = function (a) {
 	return {$: 'Codec', a: a};
@@ -6148,6 +6148,14 @@ var $miniBill$elm_codec$Codec$field = F4(
 				}
 			});
 	});
+var $miniBill$elm_codec$Codec$build = F2(
+	function (encoder_, decoder_) {
+		return $miniBill$elm_codec$Codec$Codec(
+			{decoder: decoder_, encoder: encoder_});
+	});
+var $elm$json$Json$Decode$int = _Json_decodeInt;
+var $elm$json$Json$Encode$int = _Json_wrap;
+var $miniBill$elm_codec$Codec$int = A2($miniBill$elm_codec$Codec$build, $elm$json$Json$Encode$int, $elm$json$Json$Decode$int);
 var $miniBill$elm_codec$Codec$map = F3(
 	function (go, back, codec) {
 		return $miniBill$elm_codec$Codec$Codec(
@@ -6164,6 +6172,15 @@ var $miniBill$elm_codec$Codec$map = F3(
 				}
 			});
 	});
+var $miniBill$elm_codec$Codec$object = function (ctor) {
+	return $miniBill$elm_codec$Codec$ObjectCodec(
+		{
+			decoder: $elm$json$Json$Decode$succeed(ctor),
+			encoder: function (_v0) {
+				return _List_Nil;
+			}
+		});
+};
 var $elm$json$Json$Decode$oneOf = _Json_oneOf;
 var $elm$json$Json$Decode$maybe = function (decoder) {
 	return $elm$json$Json$Decode$oneOf(
@@ -6189,19 +6206,35 @@ var $miniBill$elm_codec$Codec$maybe = function (codec) {
 			}
 		});
 };
-var $miniBill$elm_codec$Codec$object = function (ctor) {
-	return $miniBill$elm_codec$Codec$ObjectCodec(
-		{
-			decoder: $elm$json$Json$Decode$succeed(ctor),
-			encoder: function (_v0) {
-				return _List_Nil;
-			}
-		});
-};
-var $miniBill$elm_codec$Codec$build = F2(
-	function (encoder_, decoder_) {
-		return $miniBill$elm_codec$Codec$Codec(
-			{decoder: decoder_, encoder: encoder_});
+var $miniBill$elm_codec$Codec$optionalField = F4(
+	function (name, getter, codec, _v0) {
+		var ocodec = _v0.a;
+		return $miniBill$elm_codec$Codec$ObjectCodec(
+			{
+				decoder: A3(
+					$elm$json$Json$Decode$map2,
+					F2(
+						function (f, x) {
+							return f(x);
+						}),
+					ocodec.decoder,
+					$elm$json$Json$Decode$maybe(
+						A2(
+							$elm$json$Json$Decode$field,
+							name,
+							$miniBill$elm_codec$Codec$decoder(codec)))),
+				encoder: function (v) {
+					return A2(
+						$elm$core$List$cons,
+						_Utils_Tuple2(
+							name,
+							A2(
+								$miniBill$elm_codec$Codec$encoder,
+								$miniBill$elm_codec$Codec$maybe(codec),
+								getter(v))),
+						ocodec.encoder(v));
+				}
+			});
 	});
 var $elm$json$Json$Decode$string = _Json_decodeString;
 var $elm$json$Json$Encode$string = _Json_wrap;
@@ -6209,38 +6242,128 @@ var $miniBill$elm_codec$Codec$string = A2($miniBill$elm_codec$Codec$build, $elm$
 var $elm$core$String$toLower = _String_toLower;
 var $author$project$DTT$Data$InputForm$codec = $miniBill$elm_codec$Codec$buildObject(
 	A4(
-		$miniBill$elm_codec$Codec$field,
-		'content',
+		$miniBill$elm_codec$Codec$optionalField,
+		'amount',
 		function ($) {
-			return $.content;
+			return $.amount;
 		},
-		$miniBill$elm_codec$Codec$maybe($miniBill$elm_codec$Codec$string),
+		$miniBill$elm_codec$Codec$int,
 		A4(
-			$miniBill$elm_codec$Codec$field,
-			'id',
+			$miniBill$elm_codec$Codec$optionalField,
+			'content',
 			function ($) {
-				return $.id;
+				return $.content;
 			},
-			$miniBill$elm_codec$Codec$maybe($miniBill$elm_codec$Codec$string),
+			$miniBill$elm_codec$Codec$string,
 			A4(
-				$miniBill$elm_codec$Codec$field,
-				'action',
+				$miniBill$elm_codec$Codec$optionalField,
+				'id',
 				function ($) {
-					return $.action;
+					return $.id;
 				},
-				A3($miniBill$elm_codec$Codec$map, $elm$core$String$toLower, $elm$core$String$toLower, $miniBill$elm_codec$Codec$string),
+				$miniBill$elm_codec$Codec$string,
 				A4(
 					$miniBill$elm_codec$Codec$field,
-					'page',
+					'action',
 					function ($) {
-						return $.page;
+						return $.action;
 					},
 					A3($miniBill$elm_codec$Codec$map, $elm$core$String$toLower, $elm$core$String$toLower, $miniBill$elm_codec$Codec$string),
-					$miniBill$elm_codec$Codec$object($author$project$DTT$Data$InputForm$InputForm))))));
-var $author$project$DTT$Data$OutputForm$OutputForm = F3(
-	function (error, todo, secrets) {
-		return {error: error, secrets: secrets, todo: todo};
+					A4(
+						$miniBill$elm_codec$Codec$field,
+						'page',
+						function ($) {
+							return $.page;
+						},
+						A3($miniBill$elm_codec$Codec$map, $elm$core$String$toLower, $elm$core$String$toLower, $miniBill$elm_codec$Codec$string),
+						$miniBill$elm_codec$Codec$object($author$project$DTT$Data$InputForm$InputForm)))))));
+var $author$project$DTT$Data$OutputForm$OutputForm = F4(
+	function (error, todo, secrets, budget) {
+		return {budget: budget, error: error, secrets: secrets, todo: todo};
 	});
+var $author$project$DTT$Data$Budget$Budget = F2(
+	function (totalCent, spendings) {
+		return {spendings: spendings, totalCent: totalCent};
+	});
+var $author$project$DTT$Data$Budget$Spending = F5(
+	function (id, user, cent, reference, lastUpdated) {
+		return {cent: cent, id: id, lastUpdated: lastUpdated, reference: reference, user: user};
+	});
+var $author$project$DTT$Data$Id$codec = $miniBill$elm_codec$Codec$string;
+var $author$project$DTT$Data$codecPosix = A3($miniBill$elm_codec$Codec$map, $elm$time$Time$millisToPosix, $elm$time$Time$posixToMillis, $miniBill$elm_codec$Codec$int);
+var $author$project$DTT$Data$Budget$codecSpending = $miniBill$elm_codec$Codec$buildObject(
+	A4(
+		$miniBill$elm_codec$Codec$field,
+		'lastUpdated',
+		function ($) {
+			return $.lastUpdated;
+		},
+		$author$project$DTT$Data$codecPosix,
+		A4(
+			$miniBill$elm_codec$Codec$field,
+			'reference',
+			function ($) {
+				return $.reference;
+			},
+			$miniBill$elm_codec$Codec$string,
+			A4(
+				$miniBill$elm_codec$Codec$field,
+				'cent',
+				function ($) {
+					return $.cent;
+				},
+				$miniBill$elm_codec$Codec$int,
+				A4(
+					$miniBill$elm_codec$Codec$field,
+					'user',
+					function ($) {
+						return $.user;
+					},
+					$miniBill$elm_codec$Codec$string,
+					A4(
+						$miniBill$elm_codec$Codec$field,
+						'id',
+						function ($) {
+							return $.id;
+						},
+						$author$project$DTT$Data$Id$codec,
+						$miniBill$elm_codec$Codec$object($author$project$DTT$Data$Budget$Spending)))))));
+var $miniBill$elm_codec$Codec$composite = F3(
+	function (enc, dec, _v0) {
+		var codec = _v0.a;
+		return $miniBill$elm_codec$Codec$Codec(
+			{
+				decoder: dec(codec.decoder),
+				encoder: enc(codec.encoder)
+			});
+	});
+var $elm$json$Json$Decode$list = _Json_decodeList;
+var $elm$json$Json$Encode$list = F2(
+	function (func, entries) {
+		return _Json_wrap(
+			A3(
+				$elm$core$List$foldl,
+				_Json_addEntry(func),
+				_Json_emptyArray(_Utils_Tuple0),
+				entries));
+	});
+var $miniBill$elm_codec$Codec$list = A2($miniBill$elm_codec$Codec$composite, $elm$json$Json$Encode$list, $elm$json$Json$Decode$list);
+var $author$project$DTT$Data$Budget$codec = $miniBill$elm_codec$Codec$buildObject(
+	A4(
+		$miniBill$elm_codec$Codec$field,
+		'spendings',
+		function ($) {
+			return $.spendings;
+		},
+		$miniBill$elm_codec$Codec$list($author$project$DTT$Data$Budget$codecSpending),
+		A4(
+			$miniBill$elm_codec$Codec$field,
+			'totalCent',
+			function ($) {
+				return $.totalCent;
+			},
+			$miniBill$elm_codec$Codec$int,
+			$miniBill$elm_codec$Codec$object($author$project$DTT$Data$Budget$Budget))));
 var $author$project$DTT$Data$Error$ErrorJson = F2(
 	function (errorType, content) {
 		return {content: content, errorType: errorType};
@@ -6292,11 +6415,6 @@ var $author$project$DTT$Data$TodoEntry$TodoEntry = F4(
 	function (id, user, message, lastUpdated) {
 		return {id: id, lastUpdated: lastUpdated, message: message, user: user};
 	});
-var $author$project$DTT$Data$Id$codec = $miniBill$elm_codec$Codec$string;
-var $elm$json$Json$Decode$int = _Json_decodeInt;
-var $elm$json$Json$Encode$int = _Json_wrap;
-var $miniBill$elm_codec$Codec$int = A2($miniBill$elm_codec$Codec$build, $elm$json$Json$Encode$int, $elm$json$Json$Decode$int);
-var $author$project$DTT$Data$TodoEntry$codecPosix = A3($miniBill$elm_codec$Codec$map, $elm$time$Time$millisToPosix, $elm$time$Time$posixToMillis, $miniBill$elm_codec$Codec$int);
 var $author$project$DTT$Data$TodoEntry$codec = $miniBill$elm_codec$Codec$buildObject(
 	A4(
 		$miniBill$elm_codec$Codec$field,
@@ -6304,7 +6422,7 @@ var $author$project$DTT$Data$TodoEntry$codec = $miniBill$elm_codec$Codec$buildOb
 		function ($) {
 			return $.lastUpdated;
 		},
-		$author$project$DTT$Data$TodoEntry$codecPosix,
+		$author$project$DTT$Data$codecPosix,
 		A4(
 			$miniBill$elm_codec$Codec$field,
 			'message',
@@ -6327,51 +6445,38 @@ var $author$project$DTT$Data$TodoEntry$codec = $miniBill$elm_codec$Codec$buildOb
 					},
 					$author$project$DTT$Data$Id$codec,
 					$miniBill$elm_codec$Codec$object($author$project$DTT$Data$TodoEntry$TodoEntry))))));
-var $miniBill$elm_codec$Codec$composite = F3(
-	function (enc, dec, _v0) {
-		var codec = _v0.a;
-		return $miniBill$elm_codec$Codec$Codec(
-			{
-				decoder: dec(codec.decoder),
-				encoder: enc(codec.encoder)
-			});
-	});
-var $elm$json$Json$Decode$list = _Json_decodeList;
-var $elm$json$Json$Encode$list = F2(
-	function (func, entries) {
-		return _Json_wrap(
-			A3(
-				$elm$core$List$foldl,
-				_Json_addEntry(func),
-				_Json_emptyArray(_Utils_Tuple0),
-				entries));
-	});
-var $miniBill$elm_codec$Codec$list = A2($miniBill$elm_codec$Codec$composite, $elm$json$Json$Encode$list, $elm$json$Json$Decode$list);
 var $author$project$DTT$Data$OutputForm$codec = $miniBill$elm_codec$Codec$buildObject(
 	A4(
 		$miniBill$elm_codec$Codec$field,
-		'secrets',
+		'budget',
 		function ($) {
-			return $.secrets;
+			return $.budget;
 		},
-		$miniBill$elm_codec$Codec$maybe(
-			$miniBill$elm_codec$Codec$list($author$project$DTT$Data$Secret$codec)),
+		$miniBill$elm_codec$Codec$maybe($author$project$DTT$Data$Budget$codec),
 		A4(
 			$miniBill$elm_codec$Codec$field,
-			'todo',
+			'secrets',
 			function ($) {
-				return $.todo;
+				return $.secrets;
 			},
 			$miniBill$elm_codec$Codec$maybe(
-				$miniBill$elm_codec$Codec$list($author$project$DTT$Data$TodoEntry$codec)),
+				$miniBill$elm_codec$Codec$list($author$project$DTT$Data$Secret$codec)),
 			A4(
 				$miniBill$elm_codec$Codec$field,
-				'error',
+				'todo',
 				function ($) {
-					return $.error;
+					return $.todo;
 				},
-				$miniBill$elm_codec$Codec$maybe($author$project$DTT$Data$Error$codec),
-				$miniBill$elm_codec$Codec$object($author$project$DTT$Data$OutputForm$OutputForm)))));
+				$miniBill$elm_codec$Codec$maybe(
+					$miniBill$elm_codec$Codec$list($author$project$DTT$Data$TodoEntry$codec)),
+				A4(
+					$miniBill$elm_codec$Codec$field,
+					'error',
+					function ($) {
+						return $.error;
+					},
+					$miniBill$elm_codec$Codec$maybe($author$project$DTT$Data$Error$codec),
+					$miniBill$elm_codec$Codec$object($author$project$DTT$Data$OutputForm$OutputForm))))));
 var $elm$json$Json$Decode$decodeValue = _Json_run;
 var $miniBill$elm_codec$Codec$decodeValue = function (codec) {
 	return $elm$json$Json$Decode$decodeValue(
@@ -6400,6 +6505,9 @@ var $elm$random$Random$float = F2(
 					$elm$random$Random$next(seed1));
 			});
 	});
+var $author$project$Api$DeleteBudget = function (a) {
+	return {$: 'DeleteBudget', a: a};
+};
 var $author$project$Api$DeleteSecret = function (a) {
 	return {$: 'DeleteSecret', a: a};
 };
@@ -6410,17 +6518,24 @@ var $author$project$Api$ForceReset = {$: 'ForceReset'};
 var $author$project$Api$GotInput = function (a) {
 	return {$: 'GotInput', a: a};
 };
-var $author$project$Api$InputTodoEntry = function (a) {
-	return {$: 'InputTodoEntry', a: a};
+var $author$project$Api$InsertBudget = function (a) {
+	return {$: 'InsertBudget', a: a};
 };
 var $author$project$Api$InsertSecret = function (a) {
 	return {$: 'InsertSecret', a: a};
 };
+var $author$project$Api$InsertTodoEntry = function (a) {
+	return {$: 'InsertTodoEntry', a: a};
+};
 var $author$project$DTT$Data$Error$ParsingError = function (a) {
 	return {$: 'ParsingError', a: a};
 };
+var $author$project$Api$SyncBudget = {$: 'SyncBudget'};
 var $author$project$Api$SyncSecret = {$: 'SyncSecret'};
 var $author$project$Api$SyncTodoEntry = {$: 'SyncTodoEntry'};
+var $author$project$Api$UpdateBudget = function (a) {
+	return {$: 'UpdateBudget', a: a};
+};
 var $author$project$Api$UpdateTodoEntry = function (a) {
 	return {$: 'UpdateTodoEntry', a: a};
 };
@@ -6463,59 +6578,74 @@ var $author$project$Api$handleInput = A2(
 					var action = form.action;
 					var id = form.id;
 					var content = form.content;
+					var amount = form.amount;
 					switch (page) {
 						case 'admin':
-							var _v1 = _Utils_Tuple3(action, id, content);
-							if (((_v1.a === 'reset') && (_v1.b.$ === 'Nothing')) && (_v1.c.$ === 'Nothing')) {
+							var _v1 = _Utils_Tuple2(
+								action,
+								_Utils_Tuple3(id, content, amount));
+							if ((((_v1.a === 'reset') && (_v1.b.a.$ === 'Nothing')) && (_v1.b.b.$ === 'Nothing')) && (_v1.b.c.$ === 'Nothing')) {
 								var _v2 = _v1.b;
-								var _v3 = _v1.c;
+								var _v3 = _v2.a;
+								var _v4 = _v2.b;
+								var _v5 = _v2.c;
 								return $elm$core$Result$Ok($author$project$Api$ForceReset);
 							} else {
 								return $elm$core$Result$Err(
 									$author$project$DTT$Data$Error$WrongInputFormat(form));
 							}
 						case 'todo':
-							var _v4 = _Utils_Tuple3(action, id, content);
-							_v4$4:
+							var _v6 = _Utils_Tuple2(
+								action,
+								_Utils_Tuple3(id, content, amount));
+							_v6$4:
 							while (true) {
-								if (_v4.b.$ === 'Just') {
-									if (_v4.c.$ === 'Nothing') {
-										if (_v4.a === 'delete') {
-											var i = _v4.b.a;
-											var _v6 = _v4.c;
+								if (_v6.b.a.$ === 'Just') {
+									if (_v6.b.b.$ === 'Nothing') {
+										if ((_v6.a === 'delete') && (_v6.b.c.$ === 'Nothing')) {
+											var _v10 = _v6.b;
+											var i = _v10.a.a;
+											var _v11 = _v10.b;
+											var _v12 = _v10.c;
 											return $elm$core$Result$Ok(
 												$author$project$Api$DeleteTodoEntry(i));
 										} else {
-											break _v4$4;
+											break _v6$4;
 										}
 									} else {
-										if (_v4.a === 'update') {
-											var i = _v4.b.a;
-											var message = _v4.c.a;
+										if ((_v6.a === 'update') && (_v6.b.c.$ === 'Nothing')) {
+											var _v13 = _v6.b;
+											var i = _v13.a.a;
+											var message = _v13.b.a;
+											var _v14 = _v13.c;
 											return $elm$core$Result$Ok(
 												$author$project$Api$UpdateTodoEntry(
 													{id: i, message: message}));
 										} else {
-											break _v4$4;
+											break _v6$4;
 										}
 									}
 								} else {
-									if (_v4.c.$ === 'Just') {
-										if (_v4.a === 'insert') {
-											var _v5 = _v4.b;
-											var message = _v4.c.a;
+									if (_v6.b.b.$ === 'Just') {
+										if ((_v6.a === 'insert') && (_v6.b.c.$ === 'Nothing')) {
+											var _v7 = _v6.b;
+											var _v8 = _v7.a;
+											var message = _v7.b.a;
+											var _v9 = _v7.c;
 											return $elm$core$Result$Ok(
-												$author$project$Api$InputTodoEntry(message));
+												$author$project$Api$InsertTodoEntry(message));
 										} else {
-											break _v4$4;
+											break _v6$4;
 										}
 									} else {
-										if (_v4.a === 'sync') {
-											var _v7 = _v4.b;
-											var _v8 = _v4.c;
+										if ((_v6.a === 'sync') && (_v6.b.c.$ === 'Nothing')) {
+											var _v15 = _v6.b;
+											var _v16 = _v15.a;
+											var _v17 = _v15.b;
+											var _v18 = _v15.c;
 											return $elm$core$Result$Ok($author$project$Api$SyncTodoEntry);
 										} else {
-											break _v4$4;
+											break _v6$4;
 										}
 									}
 								}
@@ -6523,36 +6653,107 @@ var $author$project$Api$handleInput = A2(
 							return $elm$core$Result$Err(
 								$author$project$DTT$Data$Error$WrongInputFormat(form));
 						case 'secrets':
-							var _v9 = _Utils_Tuple3(action, id, content);
-							_v9$3:
+							var _v19 = _Utils_Tuple2(
+								action,
+								_Utils_Tuple3(id, content, amount));
+							_v19$3:
 							while (true) {
-								if (_v9.b.$ === 'Nothing') {
-									if (_v9.c.$ === 'Just') {
-										switch (_v9.a) {
-											case 'insert':
-												var _v10 = _v9.b;
-												var secret = _v9.c.a;
-												return $elm$core$Result$Ok(
-													$author$project$Api$InsertSecret(secret));
-											case 'delete':
-												var _v11 = _v9.b;
-												var secret = _v9.c.a;
-												return $elm$core$Result$Ok(
-													$author$project$Api$DeleteSecret(secret));
-											default:
-												break _v9$3;
+								if (_v19.b.a.$ === 'Nothing') {
+									if (_v19.b.b.$ === 'Just') {
+										if (_v19.b.c.$ === 'Nothing') {
+											switch (_v19.a) {
+												case 'insert':
+													var _v20 = _v19.b;
+													var _v21 = _v20.a;
+													var secret = _v20.b.a;
+													var _v22 = _v20.c;
+													return $elm$core$Result$Ok(
+														$author$project$Api$InsertSecret(secret));
+												case 'delete':
+													var _v23 = _v19.b;
+													var _v24 = _v23.a;
+													var secret = _v23.b.a;
+													var _v25 = _v23.c;
+													return $elm$core$Result$Ok(
+														$author$project$Api$DeleteSecret(secret));
+												default:
+													break _v19$3;
+											}
+										} else {
+											break _v19$3;
 										}
 									} else {
-										if (_v9.a === 'sync') {
-											var _v12 = _v9.b;
-											var _v13 = _v9.c;
+										if ((_v19.a === 'sync') && (_v19.b.c.$ === 'Nothing')) {
+											var _v26 = _v19.b;
+											var _v27 = _v26.a;
+											var _v28 = _v26.b;
+											var _v29 = _v26.c;
 											return $elm$core$Result$Ok($author$project$Api$SyncSecret);
 										} else {
-											break _v9$3;
+											break _v19$3;
 										}
 									}
 								} else {
-									break _v9$3;
+									break _v19$3;
+								}
+							}
+							return $elm$core$Result$Err(
+								$author$project$DTT$Data$Error$WrongInputFormat(form));
+						case 'budget':
+							var _v30 = _Utils_Tuple2(
+								action,
+								_Utils_Tuple3(id, content, amount));
+							_v30$4:
+							while (true) {
+								if (_v30.b.a.$ === 'Just') {
+									if (_v30.b.b.$ === 'Nothing') {
+										if ((_v30.a === 'delete') && (_v30.b.c.$ === 'Nothing')) {
+											var _v33 = _v30.b;
+											var i = _v33.a.a;
+											var _v34 = _v33.b;
+											var _v35 = _v33.c;
+											return $elm$core$Result$Ok(
+												$author$project$Api$DeleteBudget(i));
+										} else {
+											break _v30$4;
+										}
+									} else {
+										if ((_v30.a === 'update') && (_v30.b.c.$ === 'Just')) {
+											var _v36 = _v30.b;
+											var i = _v36.a.a;
+											var reference = _v36.b.a;
+											var cent = _v36.c.a;
+											return $elm$core$Result$Ok(
+												$author$project$Api$UpdateBudget(
+													{cent: cent, id: i, reference: reference}));
+										} else {
+											break _v30$4;
+										}
+									}
+								} else {
+									if (_v30.b.b.$ === 'Just') {
+										if ((_v30.a === 'insert') && (_v30.b.c.$ === 'Just')) {
+											var _v31 = _v30.b;
+											var _v32 = _v31.a;
+											var reference = _v31.b.a;
+											var cent = _v31.c.a;
+											return $elm$core$Result$Ok(
+												$author$project$Api$InsertBudget(
+													{cent: cent, reference: reference}));
+										} else {
+											break _v30$4;
+										}
+									} else {
+										if ((_v30.a === 'sync') && (_v30.b.c.$ === 'Nothing')) {
+											var _v37 = _v30.b;
+											var _v38 = _v37.a;
+											var _v39 = _v37.b;
+											var _v40 = _v37.c;
+											return $elm$core$Result$Ok($author$project$Api$SyncBudget);
+										} else {
+											break _v30$4;
+										}
+									}
 								}
 							}
 							return $elm$core$Result$Err(
@@ -6574,6 +6775,9 @@ var $elm$core$Tuple$mapBoth = F3(
 	});
 var $elm$core$Basics$neq = _Utils_notEqual;
 var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
+var $author$project$Api$GotBudgetResponse = function (a) {
+	return {$: 'GotBudgetResponse', a: a};
+};
 var $author$project$Api$GotSecretResponse = function (a) {
 	return {$: 'GotSecretResponse', a: a};
 };
@@ -6607,10 +6811,19 @@ var $elm$core$Task$attempt = F2(
 							$elm$core$Result$Ok),
 						task))));
 	});
-var $author$project$DTT$Page$Secrets$HttpError = function (a) {
+var $author$project$DTT$Data$OutputForm$empty = {budget: $elm$core$Maybe$Nothing, error: $elm$core$Maybe$Nothing, secrets: $elm$core$Maybe$Nothing, todo: $elm$core$Maybe$Nothing};
+var $author$project$DTT$Data$OutputForm$budget = function (b) {
+	return _Utils_update(
+		$author$project$DTT$Data$OutputForm$empty,
+		{
+			budget: $elm$core$Maybe$Just(b)
+		});
+};
+var $author$project$DTT$Page$Budget$HttpError = function (a) {
 	return {$: 'HttpError', a: a};
 };
-var $author$project$DTT$Page$Secrets$IsMatched = {$: 'IsMatched'};
+var $author$project$DTT$Page$Budget$NoPermission = {$: 'NoPermission'};
+var $author$project$DTT$String$budget = '/budget';
 var $elm$http$Http$BadStatus_ = F2(
 	function (a, b) {
 		return {$: 'BadStatus_', a: a, b: b};
@@ -7060,22 +7273,10 @@ var $Orasund$elm_jsonstore$Jsonstore$delete = function (url) {
 	return $elm$http$Http$task(
 		{body: $elm$http$Http$emptyBody, headers: _List_Nil, method: 'DELETE', resolver: $Orasund$elm_jsonstore$Jsonstore$resolveWhatever, timeout: $elm$core$Maybe$Nothing, url: url});
 };
-var $author$project$DTT$String$secrets = '/secrets';
 var $author$project$DTT$Data$url = 'https://www.jsonstore.io/ef32899156a024d90ab93b0bd506a4930cbcd4754609d6fd9c9f35a9fc4a04b3';
-var $author$project$DTT$Data$Secret$deleteResponse = function (hash) {
-	return $Orasund$elm_jsonstore$Jsonstore$delete($author$project$DTT$Data$url + ($author$project$DTT$String$secrets + ('/' + hash)));
+var $author$project$DTT$Data$Budget$deleteResponse = function (id) {
+	return $Orasund$elm_jsonstore$Jsonstore$delete($author$project$DTT$Data$url + ($author$project$DTT$String$budget + ('/' + id)));
 };
-var $elm$core$List$filter = F2(
-	function (isGood, list) {
-		return A3(
-			$elm$core$List$foldr,
-			F2(
-				function (x, xs) {
-					return isGood(x) ? A2($elm$core$List$cons, x, xs) : xs;
-				}),
-			_List_Nil,
-			list);
-	});
 var $Orasund$elm_jsonstore$Jsonstore$decode = function (_v0) {
 	var _v1 = _v0.a;
 	var fun = _v1.a;
@@ -7188,6 +7389,22 @@ var $Orasund$elm_jsonstore$Jsonstore$get = F2(
 				url: url
 			});
 	});
+var $Orasund$elm_jsonstore$Jsonstore$int = $Orasund$elm_jsonstore$Jsonstore$Json(
+	_Utils_Tuple2($elm$json$Json$Decode$int, $elm$json$Json$Encode$int));
+var $Orasund$elm_jsonstore$Jsonstore$string = $Orasund$elm_jsonstore$Jsonstore$Json(
+	_Utils_Tuple2($elm$json$Json$Decode$string, $elm$json$Json$Encode$string));
+var $author$project$DTT$Data$Id$json = $Orasund$elm_jsonstore$Jsonstore$string;
+var $Orasund$elm_jsonstore$Jsonstore$map = F3(
+	function (dFun, eFun, _v0) {
+		var _v1 = _v0.a;
+		var d = _v1.a;
+		var e = _v1.b;
+		return $Orasund$elm_jsonstore$Jsonstore$Json(
+			_Utils_Tuple2(
+				A2($elm$json$Json$Decode$map, dFun, d),
+				A2($elm$core$Basics$composeR, eFun, e)));
+	});
+var $author$project$DTT$Data$jsonPosix = A3($Orasund$elm_jsonstore$Jsonstore$map, $elm$time$Time$millisToPosix, $elm$time$Time$posixToMillis, $Orasund$elm_jsonstore$Jsonstore$int);
 var $Orasund$elm_jsonstore$Jsonstore$JsonObject = function (a) {
 	return {$: 'JsonObject', a: a};
 };
@@ -7197,8 +7414,6 @@ var $Orasund$elm_jsonstore$Jsonstore$object = function (fun) {
 			$elm$json$Json$Decode$succeed(fun),
 			_List_Nil));
 };
-var $Orasund$elm_jsonstore$Jsonstore$string = $Orasund$elm_jsonstore$Jsonstore$Json(
-	_Utils_Tuple2($elm$json$Json$Decode$string, $elm$json$Json$Encode$string));
 var $Orasund$elm_jsonstore$Jsonstore$toJson = function (_v0) {
 	var _v1 = _v0.a;
 	var d = _v1.a;
@@ -7253,6 +7468,43 @@ var $Orasund$elm_jsonstore$Jsonstore$with = F4(
 						}),
 					e)));
 	});
+var $author$project$DTT$Data$Budget$jsonSpending = $Orasund$elm_jsonstore$Jsonstore$toJson(
+	A4(
+		$Orasund$elm_jsonstore$Jsonstore$with,
+		'lastUpdated',
+		$author$project$DTT$Data$jsonPosix,
+		function ($) {
+			return $.lastUpdated;
+		},
+		A4(
+			$Orasund$elm_jsonstore$Jsonstore$with,
+			'reference',
+			$Orasund$elm_jsonstore$Jsonstore$string,
+			function ($) {
+				return $.reference;
+			},
+			A4(
+				$Orasund$elm_jsonstore$Jsonstore$with,
+				'cent',
+				$Orasund$elm_jsonstore$Jsonstore$int,
+				function ($) {
+					return $.cent;
+				},
+				A4(
+					$Orasund$elm_jsonstore$Jsonstore$with,
+					'user',
+					$Orasund$elm_jsonstore$Jsonstore$string,
+					function ($) {
+						return $.user;
+					},
+					A4(
+						$Orasund$elm_jsonstore$Jsonstore$with,
+						'id',
+						$author$project$DTT$Data$Id$json,
+						function ($) {
+							return $.id;
+						},
+						$Orasund$elm_jsonstore$Jsonstore$object($author$project$DTT$Data$Budget$Spending)))))));
 var $elm$core$Maybe$map = F2(
 	function (f, maybe) {
 		if (maybe.$ === 'Just') {
@@ -7263,6 +7515,16 @@ var $elm$core$Maybe$map = F2(
 			return $elm$core$Maybe$Nothing;
 		}
 	});
+var $elm$core$Dict$values = function (dict) {
+	return A3(
+		$elm$core$Dict$foldr,
+		F3(
+			function (key, value, valueList) {
+				return A2($elm$core$List$cons, value, valueList);
+			}),
+		_List_Nil,
+		dict);
+};
 var $elm$core$Maybe$withDefault = F2(
 	function (_default, maybe) {
 		if (maybe.$ === 'Just') {
@@ -7271,6 +7533,96 @@ var $elm$core$Maybe$withDefault = F2(
 		} else {
 			return _default;
 		}
+	});
+var $author$project$DTT$Data$Budget$getBudgetResponse = function (configUser) {
+	return A2(
+		$elm$core$Task$map,
+		A2(
+			$elm$core$Basics$composeR,
+			$elm$core$Maybe$map($elm$core$Dict$values),
+			A2(
+				$elm$core$Basics$composeR,
+				$elm$core$Maybe$withDefault(_List_Nil),
+				function (list) {
+					return {
+						spendings: list,
+						totalCent: A3(
+							$elm$core$List$foldl,
+							function (_v0) {
+								var cent = _v0.cent;
+								var user = _v0.user;
+								return $elm$core$Basics$add(
+									_Utils_eq(user, configUser) ? cent : (-cent));
+							},
+							0,
+							list)
+					};
+				})),
+		A2(
+			$Orasund$elm_jsonstore$Jsonstore$get,
+			_Utils_ap($author$project$DTT$Data$url, $author$project$DTT$String$budget),
+			$Orasund$elm_jsonstore$Jsonstore$decode(
+				$Orasund$elm_jsonstore$Jsonstore$dict($author$project$DTT$Data$Budget$jsonSpending))));
+};
+var $author$project$DTT$Data$Budget$getResponse = function (id) {
+	return A2(
+		$Orasund$elm_jsonstore$Jsonstore$get,
+		$author$project$DTT$Data$url + ($author$project$DTT$String$budget + ('/' + id)),
+		$Orasund$elm_jsonstore$Jsonstore$decode($author$project$DTT$Data$Budget$jsonSpending));
+};
+var $elm$core$Task$mapError = F2(
+	function (convert, task) {
+		return A2(
+			$elm$core$Task$onError,
+			A2($elm$core$Basics$composeL, $elm$core$Task$fail, convert),
+			task);
+	});
+var $author$project$DTT$Page$Budget$delete = F2(
+	function (config, id) {
+		return A2(
+			$elm$core$Task$andThen,
+			function (_v1) {
+				return A2(
+					$elm$core$Task$mapError,
+					$author$project$DTT$Page$Budget$HttpError,
+					$author$project$DTT$Data$Budget$getBudgetResponse(config.user));
+			},
+			A2(
+				$elm$core$Task$andThen,
+				function (maybeEntry) {
+					if (maybeEntry.$ === 'Just') {
+						var user = maybeEntry.a.user;
+						return _Utils_eq(user, config.user) ? A2(
+							$elm$core$Task$mapError,
+							$author$project$DTT$Page$Budget$HttpError,
+							$author$project$DTT$Data$Budget$deleteResponse(id)) : $elm$core$Task$fail($author$project$DTT$Page$Budget$NoPermission);
+					} else {
+						return $elm$core$Task$succeed(_Utils_Tuple0);
+					}
+				},
+				A2(
+					$elm$core$Task$mapError,
+					$author$project$DTT$Page$Budget$HttpError,
+					$author$project$DTT$Data$Budget$getResponse(id))));
+	});
+var $author$project$DTT$Page$Secrets$HttpError = function (a) {
+	return {$: 'HttpError', a: a};
+};
+var $author$project$DTT$Page$Secrets$IsMatched = {$: 'IsMatched'};
+var $author$project$DTT$String$secrets = '/secrets';
+var $author$project$DTT$Data$Secret$deleteResponse = function (hash) {
+	return $Orasund$elm_jsonstore$Jsonstore$delete($author$project$DTT$Data$url + ($author$project$DTT$String$secrets + ('/' + hash)));
+};
+var $elm$core$List$filter = F2(
+	function (isGood, list) {
+		return A3(
+			$elm$core$List$foldr,
+			F2(
+				function (x, xs) {
+					return isGood(x) ? A2($elm$core$List$cons, x, xs) : xs;
+				}),
+			_List_Nil,
+			list);
 	});
 var $Orasund$elm_jsonstore$Jsonstore$withMaybe = F4(
 	function (name, _v0, value, _v1) {
@@ -7325,16 +7677,6 @@ var $author$project$DTT$Data$Secret$json = $Orasund$elm_jsonstore$Jsonstore$toJs
 					return $.hash;
 				},
 				$Orasund$elm_jsonstore$Jsonstore$object($author$project$DTT$Data$Secret$Secret)))));
-var $elm$core$Dict$values = function (dict) {
-	return A3(
-		$elm$core$Dict$foldr,
-		F3(
-			function (key, value, valueList) {
-				return A2($elm$core$List$cons, value, valueList);
-			}),
-		_List_Nil,
-		dict);
-};
 var $author$project$DTT$Data$Secret$getListResponse = A2(
 	$elm$core$Task$map,
 	A2(
@@ -7346,13 +7688,6 @@ var $author$project$DTT$Data$Secret$getListResponse = A2(
 		_Utils_ap($author$project$DTT$Data$url, $author$project$DTT$String$secrets),
 		$Orasund$elm_jsonstore$Jsonstore$decode(
 			$Orasund$elm_jsonstore$Jsonstore$dict($author$project$DTT$Data$Secret$json))));
-var $elm$core$Task$mapError = F2(
-	function (convert, task) {
-		return A2(
-			$elm$core$Task$onError,
-			A2($elm$core$Basics$composeL, $elm$core$Task$fail, convert),
-			task);
-	});
 var $author$project$DTT$Page$Secrets$getList = function (config) {
 	return A2(
 		$elm$core$Task$mapError,
@@ -7969,25 +8304,11 @@ var $author$project$DTT$String$todo = '/todo';
 var $author$project$DTT$Data$TodoEntry$deleteResponse = function (id) {
 	return $Orasund$elm_jsonstore$Jsonstore$delete($author$project$DTT$Data$url + ($author$project$DTT$String$todo + ('/' + id)));
 };
-var $author$project$DTT$Data$Id$json = $Orasund$elm_jsonstore$Jsonstore$string;
-var $Orasund$elm_jsonstore$Jsonstore$int = $Orasund$elm_jsonstore$Jsonstore$Json(
-	_Utils_Tuple2($elm$json$Json$Decode$int, $elm$json$Json$Encode$int));
-var $Orasund$elm_jsonstore$Jsonstore$map = F3(
-	function (dFun, eFun, _v0) {
-		var _v1 = _v0.a;
-		var d = _v1.a;
-		var e = _v1.b;
-		return $Orasund$elm_jsonstore$Jsonstore$Json(
-			_Utils_Tuple2(
-				A2($elm$json$Json$Decode$map, dFun, d),
-				A2($elm$core$Basics$composeR, eFun, e)));
-	});
-var $author$project$DTT$Data$TodoEntry$jsonPosix = A3($Orasund$elm_jsonstore$Jsonstore$map, $elm$time$Time$millisToPosix, $elm$time$Time$posixToMillis, $Orasund$elm_jsonstore$Jsonstore$int);
 var $author$project$DTT$Data$TodoEntry$json = $Orasund$elm_jsonstore$Jsonstore$toJson(
 	A4(
 		$Orasund$elm_jsonstore$Jsonstore$with,
 		'lastUpdated',
-		$author$project$DTT$Data$TodoEntry$jsonPosix,
+		$author$project$DTT$Data$jsonPosix,
 		function ($) {
 			return $.lastUpdated;
 		},
@@ -8055,7 +8376,6 @@ var $author$project$DTT$Page$Todo$deleteEntry = F2(
 					$author$project$DTT$Page$Todo$HttpError,
 					$author$project$DTT$Data$TodoEntry$getResponse(id))));
 	});
-var $author$project$DTT$Data$OutputForm$empty = {error: $elm$core$Maybe$Nothing, secrets: $elm$core$Maybe$Nothing, todo: $elm$core$Maybe$Nothing};
 var $author$project$DTT$Data$OutputForm$error = function (err) {
 	return _Utils_update(
 		$author$project$DTT$Data$OutputForm$empty,
@@ -8063,7 +8383,18 @@ var $author$project$DTT$Data$OutputForm$error = function (err) {
 			error: $elm$core$Maybe$Just(err)
 		});
 };
+var $author$project$DTT$Page$Budget$get = function (config) {
+	return A2(
+		$elm$core$Task$mapError,
+		$author$project$DTT$Page$Budget$HttpError,
+		$author$project$DTT$Data$Budget$getBudgetResponse(config.user));
+};
 var $author$project$DTT$Page$Todo$getList = A2($elm$core$Task$mapError, $author$project$DTT$Page$Todo$HttpError, $author$project$DTT$Data$TodoEntry$getListResponse);
+var $elm$random$Random$maxInt = 2147483647;
+var $author$project$DTT$Data$Id$generate = A2(
+	$elm$random$Random$map,
+	$elm$core$String$fromInt,
+	A2($elm$random$Random$int, 0, $elm$random$Random$maxInt));
 var $Orasund$elm_jsonstore$Jsonstore$encode = function (_v0) {
 	var _v1 = _v0.a;
 	var fun = _v1.b;
@@ -8086,6 +8417,32 @@ var $Orasund$elm_jsonstore$Jsonstore$insert = F2(
 				timeout: $elm$core$Maybe$Nothing,
 				url: url
 			});
+	});
+var $author$project$DTT$Data$Budget$insertResponse = function (entry) {
+	return A2(
+		$Orasund$elm_jsonstore$Jsonstore$insert,
+		$author$project$DTT$Data$url + ($author$project$DTT$String$budget + ('/' + entry.id)),
+		A2($Orasund$elm_jsonstore$Jsonstore$encode, $author$project$DTT$Data$Budget$jsonSpending, entry));
+};
+var $author$project$DTT$Page$Budget$insert = F2(
+	function (config, _v0) {
+		var cent = _v0.cent;
+		var reference = _v0.reference;
+		return A2(
+			$elm$random$Random$map,
+			function (id) {
+				return A2(
+					$elm$core$Task$mapError,
+					$author$project$DTT$Page$Budget$HttpError,
+					A2(
+						$elm$core$Task$andThen,
+						function (_v1) {
+							return $author$project$DTT$Data$Budget$getBudgetResponse(config.user);
+						},
+						$author$project$DTT$Data$Budget$insertResponse(
+							{cent: cent, id: id, lastUpdated: config.currentTime, reference: reference, user: config.user})));
+			},
+			$author$project$DTT$Data$Id$generate);
 	});
 var $author$project$DTT$Data$Secret$insertResponse = function (entry) {
 	return A2(
@@ -8138,11 +8495,6 @@ var $author$project$DTT$Page$Secrets$insert = F2(
 					$billstclair$elm_sha256$Sha256$sha224(
 						$elm$core$String$toLower(raw)))));
 	});
-var $elm$random$Random$maxInt = 2147483647;
-var $author$project$DTT$Data$Id$generate = A2(
-	$elm$random$Random$map,
-	$elm$core$String$fromInt,
-	A2($elm$random$Random$int, 0, $elm$random$Random$maxInt));
 var $author$project$DTT$Data$TodoEntry$insertResponse = function (entry) {
 	return A2(
 		$Orasund$elm_jsonstore$Jsonstore$insert,
@@ -8226,6 +8578,41 @@ var $author$project$DTT$Data$OutputForm$todo = function (list) {
 			todo: $elm$core$Maybe$Just(list)
 		});
 };
+var $author$project$DTT$Page$Budget$update = F2(
+	function (config, _v0) {
+		var id = _v0.id;
+		var cent = _v0.cent;
+		var reference = _v0.reference;
+		return A2(
+			$elm$core$Task$andThen,
+			function (_v2) {
+				return A2(
+					$elm$core$Task$mapError,
+					$author$project$DTT$Page$Budget$HttpError,
+					$author$project$DTT$Data$Budget$getBudgetResponse(config.user));
+			},
+			A2(
+				$elm$core$Task$andThen,
+				function (maybeSpending) {
+					if (maybeSpending.$ === 'Just') {
+						var entry = maybeSpending.a;
+						var user = entry.user;
+						return _Utils_eq(user, config.user) ? A2(
+							$elm$core$Task$mapError,
+							$author$project$DTT$Page$Budget$HttpError,
+							$author$project$DTT$Data$Budget$insertResponse(
+								_Utils_update(
+									entry,
+									{cent: cent, lastUpdated: config.currentTime, reference: reference}))) : $elm$core$Task$fail($author$project$DTT$Page$Budget$NoPermission);
+					} else {
+						return $elm$core$Task$succeed(_Utils_Tuple0);
+					}
+				},
+				A2(
+					$elm$core$Task$mapError,
+					$author$project$DTT$Page$Budget$HttpError,
+					$author$project$DTT$Data$Budget$getResponse(id))));
+	});
 var $author$project$DTT$Page$Todo$updateEntry = F2(
 	function (config, _v0) {
 		var id = _v0.id;
@@ -8297,6 +8684,36 @@ var $author$project$Api$update = F4(
 											}
 										}())))));
 				}
+			case 'GotBudgetResponse':
+				var result = msg.a;
+				if (result.$ === 'Ok') {
+					var budget = result.a;
+					return _Utils_Tuple2(
+						model,
+						fromElm(
+							A2(
+								$miniBill$elm_codec$Codec$encodeToValue,
+								$author$project$DTT$Data$OutputForm$codec,
+								$author$project$DTT$Data$OutputForm$budget(budget))));
+				} else {
+					var err = result.a;
+					return _Utils_Tuple2(
+						model,
+						fromElm(
+							A2(
+								$miniBill$elm_codec$Codec$encodeToValue,
+								$author$project$DTT$Data$OutputForm$codec,
+								$author$project$DTT$Data$OutputForm$error(
+									$author$project$DTT$Data$Error$toJsError(
+										function () {
+											if (err.$ === 'HttpError') {
+												var e = err.a;
+												return $author$project$DTT$Data$Error$HttpError(e);
+											} else {
+												return $author$project$DTT$Data$Error$NoPermission;
+											}
+										}())))));
+				}
 			case 'GotSecretResponse':
 				var result = msg.a;
 				if (result.$ === 'Ok') {
@@ -8332,14 +8749,14 @@ var $author$project$Api$update = F4(
 				if (result.$ === 'Ok') {
 					var input = result.a;
 					switch (input.$) {
-						case 'InputTodoEntry':
+						case 'InsertTodoEntry':
 							var message = input.a;
-							var _v7 = A2(
+							var _v9 = A2(
 								$elm$random$Random$step,
 								A2($author$project$DTT$Page$Todo$insertEntry, model, message),
 								model.seed);
-							var cmd = _v7.a;
-							var seed = _v7.b;
+							var cmd = _v9.a;
+							var seed = _v9.b;
 							return _Utils_Tuple2(
 								_Utils_update(
 									model,
@@ -8409,6 +8826,54 @@ var $author$project$Api$update = F4(
 										$elm$core$Task$attempt,
 										$author$project$Api$GotSecretResponse,
 										$author$project$DTT$Page$Secrets$getList(model))));
+						case 'InsertBudget':
+							var struct = input.a;
+							var _v10 = A2(
+								$elm$random$Random$step,
+								A2($author$project$DTT$Page$Budget$insert, model, struct),
+								model.seed);
+							var cmd = _v10.a;
+							var seed = _v10.b;
+							return _Utils_Tuple2(
+								_Utils_update(
+									model,
+									{seed: seed}),
+								A2(
+									$elm$core$Platform$Cmd$map,
+									wrapper,
+									A2($elm$core$Task$attempt, $author$project$Api$GotBudgetResponse, cmd)));
+						case 'DeleteBudget':
+							var id = input.a;
+							return _Utils_Tuple2(
+								model,
+								A2(
+									$elm$core$Platform$Cmd$map,
+									wrapper,
+									A2(
+										$elm$core$Task$attempt,
+										$author$project$Api$GotBudgetResponse,
+										A2($author$project$DTT$Page$Budget$delete, model, id))));
+						case 'UpdateBudget':
+							var struct = input.a;
+							return _Utils_Tuple2(
+								model,
+								A2(
+									$elm$core$Platform$Cmd$map,
+									wrapper,
+									A2(
+										$elm$core$Task$attempt,
+										$author$project$Api$GotBudgetResponse,
+										A2($author$project$DTT$Page$Budget$update, model, struct))));
+						case 'SyncBudget':
+							return _Utils_Tuple2(
+								model,
+								A2(
+									$elm$core$Platform$Cmd$map,
+									wrapper,
+									A2(
+										$elm$core$Task$attempt,
+										$author$project$Api$GotBudgetResponse,
+										$author$project$DTT$Page$Budget$get(model))));
 						default:
 							return _Utils_Tuple2(
 								model,
@@ -8420,7 +8885,7 @@ var $author$project$Api$update = F4(
 										$author$project$Api$GotTodoResponse,
 										A2(
 											$elm$core$Task$andThen,
-											function (_v8) {
+											function (_v11) {
 												return $author$project$DTT$Page$Todo$getList;
 											},
 											A2(
@@ -8457,7 +8922,16 @@ var $author$project$Api$init = function (_v0) {
 		$elm$core$Platform$Cmd$none);
 };
 var $author$project$Test$initModel = function (apiModel) {
-	return {apiModel: apiModel, error: $elm$core$Maybe$Nothing, inputContent: '', inputId: '', secretsList: _List_Nil, todoList: _List_Nil};
+	return {
+		apiModel: apiModel,
+		budget: {spendings: _List_Nil, totalCent: 0},
+		error: $elm$core$Maybe$Nothing,
+		inputAmount: '',
+		inputContent: '',
+		inputId: '',
+		secretsList: _List_Nil,
+		todoList: _List_Nil
+	};
 };
 var $author$project$Test$validateWaitingModel = function (waitingModel) {
 	var user = waitingModel.user;
@@ -8524,14 +8998,20 @@ var $author$project$Test$update = F2(
 								var error = outputForm.error;
 								var todo = outputForm.todo;
 								var secrets = outputForm.secrets;
-								var _v3 = _Utils_Tuple3(error, todo, secrets);
-								_v3$3:
+								var budget = outputForm.budget;
+								var _v3 = _Utils_Tuple2(
+									_Utils_Tuple2(error, todo),
+									_Utils_Tuple2(secrets, budget));
+								_v3$4:
 								while (true) {
-									if (_v3.a.$ === 'Just') {
-										if ((_v3.b.$ === 'Nothing') && (_v3.c.$ === 'Nothing')) {
-											var err = _v3.a.a;
-											var _v4 = _v3.b;
-											var _v5 = _v3.c;
+									if (_v3.a.a.$ === 'Just') {
+										if (((_v3.a.b.$ === 'Nothing') && (_v3.b.a.$ === 'Nothing')) && (_v3.b.b.$ === 'Nothing')) {
+											var _v4 = _v3.a;
+											var err = _v4.a.a;
+											var _v5 = _v4.b;
+											var _v6 = _v3.b;
+											var _v7 = _v6.a;
+											var _v8 = _v6.b;
 											return _Utils_Tuple2(
 												$author$project$Test$Running(
 													_Utils_update(
@@ -8542,14 +9022,17 @@ var $author$project$Test$update = F2(
 														})),
 												$elm$core$Platform$Cmd$none);
 										} else {
-											break _v3$3;
+											break _v3$4;
 										}
 									} else {
-										if (_v3.b.$ === 'Just') {
-											if (_v3.c.$ === 'Nothing') {
-												var _v6 = _v3.a;
-												var todoList = _v3.b.a;
-												var _v7 = _v3.c;
+										if (_v3.a.b.$ === 'Just') {
+											if ((_v3.b.a.$ === 'Nothing') && (_v3.b.b.$ === 'Nothing')) {
+												var _v9 = _v3.a;
+												var _v10 = _v9.a;
+												var todoList = _v9.b.a;
+												var _v11 = _v3.b;
+												var _v12 = _v11.a;
+												var _v13 = _v11.b;
 												return _Utils_Tuple2(
 													$author$project$Test$Running(
 														_Utils_update(
@@ -8557,21 +9040,43 @@ var $author$project$Test$update = F2(
 															{error: $elm$core$Maybe$Nothing, todoList: todoList})),
 													$elm$core$Platform$Cmd$none);
 											} else {
-												break _v3$3;
+												break _v3$4;
 											}
 										} else {
-											if (_v3.c.$ === 'Just') {
-												var _v8 = _v3.a;
-												var _v9 = _v3.b;
-												var secretsList = _v3.c.a;
-												return _Utils_Tuple2(
-													$author$project$Test$Running(
-														_Utils_update(
-															runningModel,
-															{error: $elm$core$Maybe$Nothing, secretsList: secretsList})),
-													$elm$core$Platform$Cmd$none);
+											if (_v3.b.a.$ === 'Just') {
+												if (_v3.b.b.$ === 'Nothing') {
+													var _v14 = _v3.a;
+													var _v15 = _v14.a;
+													var _v16 = _v14.b;
+													var _v17 = _v3.b;
+													var secretsList = _v17.a.a;
+													var _v18 = _v17.b;
+													return _Utils_Tuple2(
+														$author$project$Test$Running(
+															_Utils_update(
+																runningModel,
+																{error: $elm$core$Maybe$Nothing, secretsList: secretsList})),
+														$elm$core$Platform$Cmd$none);
+												} else {
+													break _v3$4;
+												}
 											} else {
-												break _v3$3;
+												if (_v3.b.b.$ === 'Just') {
+													var _v19 = _v3.a;
+													var _v20 = _v19.a;
+													var _v21 = _v19.b;
+													var _v22 = _v3.b;
+													var _v23 = _v22.a;
+													var b = _v22.b.a;
+													return _Utils_Tuple2(
+														$author$project$Test$Running(
+															_Utils_update(
+																runningModel,
+																{budget: b, error: $elm$core$Maybe$Nothing})),
+														$elm$core$Platform$Cmd$none);
+												} else {
+													break _v3$4;
+												}
 											}
 										}
 									}
@@ -8612,93 +9117,152 @@ var $author$project$Test$update = F2(
 										runningModel,
 										{inputContent: string})),
 								$elm$core$Platform$Cmd$none);
+						case 'ChangedAmount':
+							var string = runningMsg.a;
+							return _Utils_Tuple2(
+								$author$project$Test$Running(
+									_Utils_update(
+										runningModel,
+										{inputAmount: string})),
+								$elm$core$Platform$Cmd$none);
 						default:
 							var page = runningMsg.a.page;
 							var action = runningMsg.a.action;
+							var inputWithIdAndContentAndAmount = {
+								action: action,
+								amount: $elm$core$String$toInt(runningModel.inputAmount),
+								content: $elm$core$Maybe$Just(runningModel.inputContent),
+								id: $elm$core$Maybe$Just(runningModel.inputId),
+								page: page
+							};
+							var inputWithIdAndContent = {
+								action: action,
+								amount: $elm$core$Maybe$Nothing,
+								content: $elm$core$Maybe$Just(runningModel.inputContent),
+								id: $elm$core$Maybe$Just(runningModel.inputId),
+								page: page
+							};
 							var inputWithId = {
 								action: action,
+								amount: $elm$core$Maybe$Nothing,
 								content: $elm$core$Maybe$Nothing,
 								id: $elm$core$Maybe$Just(runningModel.inputId),
 								page: page
 							};
-							var inputWithContent = {
+							var inputWithContentAndAmount = {
 								action: action,
+								amount: $elm$core$String$toInt(runningModel.inputAmount),
 								content: $elm$core$Maybe$Just(runningModel.inputContent),
 								id: $elm$core$Maybe$Nothing,
 								page: page
 							};
-							var inputWithBoth = {
+							var inputWithContent = {
 								action: action,
+								amount: $elm$core$Maybe$Nothing,
 								content: $elm$core$Maybe$Just(runningModel.inputContent),
-								id: $elm$core$Maybe$Just(runningModel.inputId),
+								id: $elm$core$Maybe$Nothing,
 								page: page
 							};
-							var inputNone = {action: action, content: $elm$core$Maybe$Nothing, id: $elm$core$Maybe$Nothing, page: page};
+							var inputNone = {action: action, amount: $elm$core$Maybe$Nothing, content: $elm$core$Maybe$Nothing, id: $elm$core$Maybe$Nothing, page: page};
 							var maybeInput = function () {
-								var _v11 = _Utils_Tuple3(
+								var _v25 = _Utils_Tuple3(
 									page,
 									action,
-									_Utils_Tuple2(runningModel.inputId !== '', runningModel.inputContent !== ''));
-								_v11$7:
+									_Utils_Tuple3(
+										runningModel.inputId !== '',
+										runningModel.inputContent !== '',
+										!_Utils_eq(
+											$elm$core$Maybe$Nothing,
+											$elm$core$String$toInt(runningModel.inputAmount))));
+								_v25$11:
 								while (true) {
-									if (_v11.c.a) {
-										if (_v11.a === 'todo') {
-											if (!_v11.c.b) {
-												if (_v11.b === 'delete') {
-													var _v14 = _v11.c;
-													return $elm$core$Maybe$Just(inputWithId);
-												} else {
-													break _v11$7;
-												}
-											} else {
-												if (_v11.b === 'update') {
-													var _v15 = _v11.c;
-													return $elm$core$Maybe$Just(inputWithBoth);
-												} else {
-													break _v11$7;
-												}
-											}
-										} else {
-											break _v11$7;
-										}
-									} else {
-										if (!_v11.c.b) {
-											if (_v11.b === 'sync') {
-												switch (_v11.a) {
+									if (!_v25.c.a) {
+										if (!_v25.c.b) {
+											if ((_v25.b === 'sync') && (!_v25.c.c)) {
+												switch (_v25.a) {
 													case 'todo':
-														var _v12 = _v11.c;
+														var _v26 = _v25.c;
 														return $elm$core$Maybe$Just(inputNone);
 													case 'secrets':
-														var _v16 = _v11.c;
+														var _v30 = _v25.c;
+														return $elm$core$Maybe$Just(inputNone);
+													case 'budget':
+														var _v33 = _v25.c;
 														return $elm$core$Maybe$Just(inputNone);
 													default:
-														break _v11$7;
+														break _v25$11;
 												}
 											} else {
-												break _v11$7;
+												break _v25$11;
 											}
 										} else {
-											switch (_v11.a) {
-												case 'todo':
-													if (_v11.b === 'insert') {
-														var _v13 = _v11.c;
-														return $elm$core$Maybe$Just(inputWithContent);
+											if (!_v25.c.c) {
+												switch (_v25.a) {
+													case 'todo':
+														if (_v25.b === 'insert') {
+															var _v27 = _v25.c;
+															return $elm$core$Maybe$Just(inputWithContent);
+														} else {
+															break _v25$11;
+														}
+													case 'secrets':
+														switch (_v25.b) {
+															case 'insert':
+																var _v31 = _v25.c;
+																return $elm$core$Maybe$Just(inputWithContent);
+															case 'delete':
+																var _v32 = _v25.c;
+																return $elm$core$Maybe$Just(inputWithContent);
+															default:
+																break _v25$11;
+														}
+													default:
+														break _v25$11;
+												}
+											} else {
+												if ((_v25.a === 'budget') && (_v25.b === 'insert')) {
+													var _v34 = _v25.c;
+													return $elm$core$Maybe$Just(inputWithContentAndAmount);
+												} else {
+													break _v25$11;
+												}
+											}
+										}
+									} else {
+										if (!_v25.c.b) {
+											if ((_v25.b === 'delete') && (!_v25.c.c)) {
+												switch (_v25.a) {
+													case 'todo':
+														var _v28 = _v25.c;
+														return $elm$core$Maybe$Just(inputWithId);
+													case 'budget':
+														var _v35 = _v25.c;
+														return $elm$core$Maybe$Just(inputWithId);
+													default:
+														break _v25$11;
+												}
+											} else {
+												break _v25$11;
+											}
+										} else {
+											if (_v25.b === 'update') {
+												if (!_v25.c.c) {
+													if (_v25.a === 'todo') {
+														var _v29 = _v25.c;
+														return $elm$core$Maybe$Just(inputWithIdAndContent);
 													} else {
-														break _v11$7;
+														break _v25$11;
 													}
-												case 'secrets':
-													switch (_v11.b) {
-														case 'insert':
-															var _v17 = _v11.c;
-															return $elm$core$Maybe$Just(inputWithContent);
-														case 'delete':
-															var _v18 = _v11.c;
-															return $elm$core$Maybe$Just(inputWithContent);
-														default:
-															break _v11$7;
+												} else {
+													if (_v25.a === 'budget') {
+														var _v36 = _v25.c;
+														return $elm$core$Maybe$Just(inputWithIdAndContentAndAmount);
+													} else {
+														break _v25$11;
 													}
-												default:
-													break _v11$7;
+												}
+											} else {
+												break _v25$11;
 											}
 										}
 									}
@@ -8773,6 +9337,9 @@ var $author$project$Test$update = F2(
 		}
 		return defaultCase;
 	});
+var $author$project$Test$ChangedAmount = function (a) {
+	return {$: 'ChangedAmount', a: a};
+};
 var $author$project$Test$ChangedContent = function (a) {
 	return {$: 'ChangedContent', a: a};
 };
@@ -16063,8 +16630,11 @@ var $author$project$Test$view = function (model) {
 					var error = model.a.error;
 					var todoList = model.a.todoList;
 					var secretsList = model.a.secretsList;
+					var budget = model.a.budget;
 					var inputId = model.a.inputId;
 					var inputContent = model.a.inputContent;
+					var inputAmount = model.a.inputAmount;
+					var apiModel = model.a.apiModel;
 					return A2(
 						$elm$core$List$map,
 						$mdgriffith$elm_ui$Element$map($author$project$Test$RunningSpecific),
@@ -16101,7 +16671,7 @@ var $author$project$Test$view = function (model) {
 								A2(
 								$mdgriffith$elm_ui$Element$el,
 								$Orasund$elm_ui_framework$Framework$Heading$h2,
-								$mdgriffith$elm_ui$Element$text('Interface')),
+								$mdgriffith$elm_ui$Element$text('Logged in as ' + apiModel.user)),
 								A2(
 								$mdgriffith$elm_ui$Element$column,
 								$Orasund$elm_ui_framework$Framework$Grid$section,
@@ -16130,6 +16700,18 @@ var $author$project$Test$view = function (model) {
 											onChange: $author$project$Test$ChangedContent,
 											placeholder: $elm$core$Maybe$Nothing,
 											text: inputContent
+										}),
+										A2(
+										$mdgriffith$elm_ui$Element$Input$text,
+										$Orasund$elm_ui_framework$Framework$Input$simple,
+										{
+											label: A2(
+												$mdgriffith$elm_ui$Element$Input$labelLeft,
+												$Orasund$elm_ui_framework$Framework$Input$label,
+												$mdgriffith$elm_ui$Element$text('Amount')),
+											onChange: $author$project$Test$ChangedAmount,
+											placeholder: $elm$core$Maybe$Nothing,
+											text: inputAmount
 										}),
 										A2(
 										$mdgriffith$elm_ui$Element$el,
@@ -16164,6 +16746,24 @@ var $author$project$Test$view = function (model) {
 												{action: 'insert', page: 'secrets'}),
 												button(
 												{action: 'delete', page: 'secrets'})
+											])),
+										A2(
+										$mdgriffith$elm_ui$Element$el,
+										$Orasund$elm_ui_framework$Framework$Heading$h3,
+										$mdgriffith$elm_ui$Element$text('page:\"budget\"')),
+										A2(
+										$mdgriffith$elm_ui$Element$paragraph,
+										_List_Nil,
+										_List_fromArray(
+											[
+												button(
+												{action: 'sync', page: 'budget'}),
+												button(
+												{action: 'insert', page: 'budget'}),
+												button(
+												{action: 'delete', page: 'budget'}),
+												button(
+												{action: 'update', page: 'budget'})
 											]))
 									])),
 								A2(
@@ -16219,7 +16819,36 @@ var $author$project$Test$view = function (model) {
 													A2($elm$core$Maybe$withDefault, '', raw))
 												]));
 									},
-									secretsList))
+									secretsList)),
+								A2(
+								$mdgriffith$elm_ui$Element$el,
+								$Orasund$elm_ui_framework$Framework$Heading$h2,
+								$mdgriffith$elm_ui$Element$text('Budget')),
+								$mdgriffith$elm_ui$Element$text(
+								'Balance : ' + ($elm$core$String$fromFloat(budget.totalCent / 100) + '€')),
+								A2(
+								$mdgriffith$elm_ui$Element$column,
+								$Orasund$elm_ui_framework$Framework$Grid$section,
+								A2(
+									$elm$core$List$map,
+									function (_v5) {
+										var id = _v5.id;
+										var user = _v5.user;
+										var cent = _v5.cent;
+										var reference = _v5.reference;
+										return A2(
+											$mdgriffith$elm_ui$Element$row,
+											$Orasund$elm_ui_framework$Framework$Grid$spacedEvenly,
+											_List_fromArray(
+												[
+													$mdgriffith$elm_ui$Element$text(id),
+													$mdgriffith$elm_ui$Element$text(user),
+													$mdgriffith$elm_ui$Element$text(
+													$elm$core$String$fromFloat(cent / 100) + '€'),
+													$mdgriffith$elm_ui$Element$text(reference)
+												]));
+									},
+									budget.spendings))
 							]));
 				}
 			}()));
