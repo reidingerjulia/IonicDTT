@@ -11,7 +11,7 @@ declare var app: any;
 export class LoginPage implements OnInit {
   username: String;
   constructor(public service: DTTService,public router: Router) {
-   this.username="julia";
+   this.username="lucas";
    this.loginClick();
   }
 

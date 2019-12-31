@@ -14,8 +14,10 @@ import {Error } from '../Models/error';
 export class Tab1Page {
   todos: Todo[];
   error: Error;
-  constructor(public toastController: ToastController,public loadingController: LoadingController,public service: DTTService, public alertController: AlertController) { }
-
+  constructor(public toastController: ToastController,public loadingController: LoadingController,public service: DTTService, public alertController: AlertController) {}
+  ionViewWillEnter(){
+    this.service.syncTodo();
+  }
   ngOnInit(){ //Richtiger Code!!
     this.service.getData().subscribe(x => {
       if(x.error != null){
@@ -68,12 +70,7 @@ export class Tab1Page {
           text: 'Ok',
           handler: (data) => {
             console.log('Confirm Ok');
-            this.service.send({
-              page: "todo",
-              action: "insert",
-              id:null,
-              content: data.content
-            });
+            this.service.insertTodo(data.content);
           }
         }
       ]

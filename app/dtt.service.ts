@@ -68,9 +68,25 @@ export class DTTService {
       , content: null
     });
   }
+  insertSecret(content: String){
+    this.send({
+      page: "secrets"
+      , action: "insert"
+      , id: null
+      , content: content
+    });
+  }
   syncTodo() {
     this.send({
       page: "todo"
+      , action: "sync"
+      , id: null
+      , content: null
+    });
+  }
+  syncSecret() {
+    this.send({
+      page: "secrets"
       , action: "sync"
       , id: null
       , content: null
@@ -82,6 +98,14 @@ export class DTTService {
       , action: "delete"
       , id: id
       , content: null
+    });
+  }
+  deleteSecret(content: String){
+    this.send({
+      page: "secrets"
+      , action: "delete"
+      , id: null
+      , content: content
     });
   }
   updateTodo(id: String, content: String){
@@ -107,4 +131,5 @@ export class DTTService {
     observable.subscribe(x => this.nrEmployees = x.length);
     return observable;
   } */
+  
 }
