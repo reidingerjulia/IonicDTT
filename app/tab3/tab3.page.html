@@ -1,9 +1,42 @@
 <ion-header>
-  <ion-toolbar>
+  <ion-toolbar color="purpur">
     <ion-title>
-      Tab Three
     </ion-title>
+    <ion-label padding = "5px" slot="end">User: {{username}}</ion-label>
   </ion-toolbar>
 </ion-header>
 
-<ion-content></ion-content>
+<ion-content>
+  <h1 class="title" color="purpur">Your Balance</h1>
+  <h2 class="title">{{this.displayBalance}}€</h2>
+  <ion-item>
+  <ion-progress-bar reversed="true" color="red" value="{{minus}}"></ion-progress-bar>
+  <ion-progress-bar color="success" value="{{plus}}"></ion-progress-bar>
+  </ion-item>
+
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button (click)="addNewSpending()">
+      <ion-icon name="add"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+
+  <ion-list>
+    <ion-item-sliding *ngFor="let spending of displaySpendings">
+      <ion-item>
+        <ion-label class="ion-text-wrap">
+          <ion-text color="purpur">
+            <h1>{{spending.reference}}</h1>
+          </ion-text>
+          <h2>User: {{spending.user}}</h2>
+          <h2>Betrag: {{spending.cent}}</h2>
+          <h2>{{spending.dateTime}}</h2>
+        </ion-label>
+      </ion-item>
+      <ion-item-options side="end">
+        <ion-item-option (click)="update(spending)">Edit</ion-item-option>
+        <ion-item-option (click)="delete(spending)">Delete</ion-item-option>
+      </ion-item-options>
+    </ion-item-sliding>
+  </ion-list>
+
+</ion-content>

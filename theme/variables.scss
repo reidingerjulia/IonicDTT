@@ -3,6 +3,7 @@
 
 /** Ionic CSS Variables **/
 :root {
+  
   /** primary **/
   --ion-color-primary: #3880ff;
   --ion-color-primary-rgb: 56, 128, 255;
@@ -74,4 +75,37 @@
   --ion-color-light-contrast-rgb: 0, 0, 0;
   --ion-color-light-shade: #d7d8da;
   --ion-color-light-tint: #f5f6f9;
+
+  --ion-color-red: #fc0000;
+  --ion-color-red-rgb: 252,0,0;
+  --ion-color-red-contrast: #ffffff;
+  --ion-color-red-contrast-rgb: 255,255,255;
+  --ion-color-red-shade: #de0000;
+  --ion-color-red-tint: #fc1a1a;
+
+  --ion-color-purpur: #983351;
+  --ion-color-purpur-rgb: 152,51,81;
+  --ion-color-purpur-contrast: #ffffff;
+  --ion-color-purpur-contrast-rgb: 255,255,255;
+  --ion-color-purpur-shade: #862d47;
+  --ion-color-purpur-tint: #a24762;
+
+}
+$toolbar-background: #3D9BDD;
+
+.ion-color-purpur {
+  --ion-color-base: var(--ion-color-purpur);
+  --ion-color-base-rgb: var(--ion-color-purpur-rgb);
+  --ion-color-contrast: var(--ion-color-purpur-contrast);
+  --ion-color-contrast-rgb: var(--ion-color-purpur-contrast-rgb);
+  --ion-color-shade: var(--ion-color-purpur-shade);
+  --ion-color-tint: var(--ion-color-purpur-tint);
+}
+.ion-color-red {
+  --ion-color-base: var(--ion-color-red);
+  --ion-color-base-rgb: var(--ion-color-red-rgb);
+  --ion-color-contrast: var(--ion-color-red-contrast);
+  --ion-color-contrast-rgb: var(--ion-color-red-contrast-rgb);
+  --ion-color-shade: var(--ion-color-red-shade);
+  --ion-color-tint: var(--ion-color-red-tint);
 }

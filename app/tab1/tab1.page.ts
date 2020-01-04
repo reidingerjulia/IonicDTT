@@ -4,6 +4,7 @@ import { AlertController, ToastController } from '@ionic/angular';
 import { Todo } from '../Models/todo';
 import { LoadingController } from '@ionic/angular';
 import {Error } from '../Models/error';
+import { Subscription } from 'rxjs';
 
 
 @Component({
@@ -14,20 +15,31 @@ import {Error } from '../Models/error';
 export class Tab1Page {
   todos: Todo[];
   error: Error;
+  s: Subscription = new Subscription();
+  username: String = "";
+  
   constructor(public toastController: ToastController,public loadingController: LoadingController,public service: DTTService, public alertController: AlertController) {}
+  
   ionViewWillEnter(){
     this.service.syncTodo();
+    
+  }
+  ionViewDidLeave()
+  {
+    //this.s.unsubscribe();
   }
   ngOnInit(){ //Richtiger Code!!
-    this.service.getData().subscribe(x => {
+    this.s = this.service.getData().subscribe(x => {
       if(x.error != null){
         console.log(x.error.errorType);
         this.presentToast(x.error.errorType);
       }else{
         this.todos = x.todo;
+        this.username = this.service.username;
       }
       
     });
+    
   }
   addNewTodo() {
     console.log("addNewTodo...");
@@ -70,6 +82,7 @@ export class Tab1Page {
           text: 'Ok',
           handler: (data) => {
             console.log('Confirm Ok');
+            console.log(data.content);
             this.service.insertTodo(data.content);
           }
         }

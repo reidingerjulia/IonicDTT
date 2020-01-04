@@ -17,6 +17,7 @@ export class Tab2Page {
   secrets: Secret[] = [];
   svgs: String[];
   error: Error;
+  username: String = "";
   constructor(public toastController: ToastController,private sanitizer: DomSanitizer, public loadingController: LoadingController, public service: DTTService, public alertController: AlertController) { 
   }
   ionViewWillEnter() {
@@ -36,9 +37,11 @@ export class Tab2Page {
       } else if(x.secrets!=null){
         this.secrets = x.secrets;
         this.secrets.forEach(secret => {
-          secret.img = this.sanitizer.bypassSecurityTrustHtml(jdenticon.toSvg(secret.hash, 200));
+          secret.img = this.sanitizer.bypassSecurityTrustHtml(jdenticon.toSvg(secret.hash, 50));
         });
         console.log(this.secrets);
+
+        this.username = this.service.username;
       }
     });
   }
@@ -54,7 +57,7 @@ export class Tab2Page {
   }
   async presentAddPrompt() {
     const alert = await this.alertController.create({
-      header: 'Add New Todo!',
+      header: 'Add New Secret!',
       inputs: [
         {
           name: 'content',
@@ -84,7 +87,7 @@ export class Tab2Page {
   }
   async presentRemovePrompt() {
     const alert = await this.alertController.create({
-      header: 'Add New Todo!',
+      header: 'Remove New Secret!',
       inputs: [
         {
           name: 'content',

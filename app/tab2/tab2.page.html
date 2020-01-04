@@ -1,26 +1,30 @@
 <ion-header>
-  <ion-toolbar>
+  <ion-toolbar color="purpur">
     <ion-title>
-      Secrets
     </ion-title>
+    <ion-label padding = "5px" slot="end">User: {{username}}</ion-label>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
-  <ion-item *ngFor="let secret of secrets">
-  <ion-label>{{secret.user}}</ion-label>
-  <ion-label>{{secret.raw}}</ion-label>
-  <svg [innerHtml]="secret.img"></svg>
-  </ion-item>
 
-  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
-    <ion-fab-button (click)="addNewSecret()">
-      <ion-icon name="add"></ion-icon>
-    </ion-fab-button>
-  </ion-fab>
-  <ion-fab vertical="bottom" horizontal="start" slot="fixed">
-    <ion-fab-button (click)="removeSecret()">
-      <ion-icon name="trash"></ion-icon>
-    </ion-fab-button>
-  </ion-fab>
+  <ion-grid>
+    <ion-row  *ngFor="let secret of secrets">
+      <ion-col ><svg [innerHtml]="secret.img"></svg></ion-col>
+      <ion-col >User: {{secret.user}}</ion-col>
+      <ion-col color="primary" vertical-align="middle">"{{secret.raw}}"</ion-col>
+    </ion-row>
+  </ion-grid>
+
+
+    <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+      <ion-fab-button (click)="addNewSecret()">
+        <ion-icon name="add"></ion-icon>
+      </ion-fab-button>
+    </ion-fab>
+    <ion-fab vertical="bottom" horizontal="start" slot="fixed">
+      <ion-fab-button (click)="removeSecret()">
+        <ion-icon name="trash"></ion-icon>
+      </ion-fab-button>
+    </ion-fab>
 </ion-content>

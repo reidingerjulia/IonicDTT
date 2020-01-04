@@ -3,9 +3,11 @@ import { Elm } from '../assets/js/main.js';
 import { flag } from './Models/flag.js';
 import { isString } from 'util';
 import { Todo } from './Models/todo.js';
+import { Budget } from './Models/budget.js';
 import { Data } from './Models/data.js';
 import { Observable, BehaviorSubject, from, merge } from 'rxjs';
 import { share } from 'rxjs/operators';
+import { IonBackButtonDelegate } from '@ionic/angular';
 
 //declare var app: any;
 @Injectable({
@@ -13,10 +15,12 @@ import { share } from 'rxjs/operators';
 })
 export class DTTService {
   todo: object[];
+  secret: Budget;
   flag: flag;
   data: Data;
   app: any;
   userHasLoggedIn: boolean = false;
+  username: String = "";
   constructor() {
     //Love You
   }
@@ -32,7 +36,7 @@ export class DTTService {
         }
       });
       this.userHasLoggedIn = true;
-      this.subscribeToDataStream();
+      this.username = username;
 
       console.log("login success");
     } catch (error) {
@@ -49,23 +53,13 @@ export class DTTService {
       console.log(`Sending failed:${error.message}`);
     }
   }
-  subscribeToDataStream(): Observable<object> {
-    console.log(`subscribe to datastream...`);
-
-    return this.app.ports.fromElm.subscribe(data => {
-      this.data = data;
-      console.log(data);
-    });
-
-    //this.syncTodo();
-  }
   
   insertTodo(content: String){
     this.send({
       page: "todo"
       , action: "insert"
       , id: null
-      , content: null
+      , content: content
     });
   }
   insertSecret(content: String){
@@ -74,6 +68,16 @@ export class DTTService {
       , action: "insert"
       , id: null
       , content: content
+    });
+  }
+  insertBudget(content: String, amount: Number){
+    console.log(content + "," + amount);
+    this.send({
+      page: "budget"
+      , action: "insert"
+      , id: null
+      , content: content
+      , amount: amount
     });
   }
   syncTodo() {
@@ -87,6 +91,14 @@ export class DTTService {
   syncSecret() {
     this.send({
       page: "secrets"
+      , action: "sync"
+      , id: null
+      , content: null
+    });
+  }
+  syncBudget() {
+    this.send({
+      page: "budget"
       , action: "sync"
       , id: null
       , content: null
@@ -108,12 +120,29 @@ export class DTTService {
       , content: content
     });
   }
+  deleteBudget(id: String){
+    this.send({
+      page: "budget"
+      , action: "delete"
+      , id: id
+      , content: null
+    });
+  }
   updateTodo(id: String, content: String){
     this.send({
       page: "todo"
       , action: "update"
       , id: id
       , content: content
+    });
+  }
+  updateBudget(id: String, centAmount: Number,content: String){
+    this.send({
+      page: "budget"
+      , action: "update"
+      , id: id
+      , content: content
+      , amount: centAmount
     });
   }
   public getData(): Observable<Data>{ //Richtiger Code!!!
