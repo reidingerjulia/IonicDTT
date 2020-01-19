@@ -1,4 +1,4 @@
-module DTT.String exposing (budget, raw, secrets, todo)
+module DTT.String exposing (budget, raw, checked,secrets, todo)
 
 
 todo : String
@@ -19,3 +19,7 @@ raw =
 budget : String
 budget =
     "/budget"
+
+checked : String
+checked =
+    "/checked"

@@ -274,7 +274,10 @@ update msg model =
 
                                 ( "todo", "delete", ( True, False, False ) ) ->
                                     Just inputWithId
-
+                                
+                                ( "todo", "toggle", (True,False,False) ) ->
+                                    Just inputWithId
+                                
                                 ( "todo", "update", ( True, True, False ) ) ->
                                     Just inputWithIdAndContent
 
@@ -434,6 +437,7 @@ view model =
                                 , button { page = "todo", action = "insert" }
                                 , button { page = "todo", action = "delete" }
                                 , button { page = "todo", action = "update" }
+                                , button { page = "todo", action = "toggle" }
                                 ]
                             , Element.el Heading.h3 <| Element.text "page:\"secrets\""
                             , Element.paragraph [] <|
@@ -453,11 +457,15 @@ view model =
                         , Element.column Grid.section <|
                             (todoList
                                 |> List.map
-                                    (\{ id, user, message, lastUpdated } ->
+                                    (\{ id, user, message, lastUpdated,checked } ->
                                         Element.row Grid.spacedEvenly <|
                                             [ Element.text <| id
                                             , Element.text <| user
                                             , Element.text <| message
+                                            , Element.text <| case checked of
+                                                Just True -> "True"
+                                                Just False -> "False"
+                                                Nothing -> ""
                                             , Element.text <| "timestamp: " ++ (String.fromInt <| Time.posixToMillis <| lastUpdated)
                                             ]
                                     )

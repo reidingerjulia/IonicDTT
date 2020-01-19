@@ -3680,6 +3680,9 @@ var $author$project$DTT$Data$Error$ParsingError = function (a) {
 var $author$project$Api$SyncBudget = {$: 'SyncBudget'};
 var $author$project$Api$SyncSecret = {$: 'SyncSecret'};
 var $author$project$Api$SyncTodoEntry = {$: 'SyncTodoEntry'};
+var $author$project$Api$ToggleTodoEntry = function (a) {
+	return {$: 'ToggleTodoEntry', a: a};
+};
 var $author$project$Api$UpdateBudget = function (a) {
 	return {$: 'UpdateBudget', a: a};
 };
@@ -3955,21 +3958,10 @@ var $author$project$Api$handleInput = A2(
 							var _v6 = _Utils_Tuple2(
 								action,
 								_Utils_Tuple3(id, content, amount));
-							_v6$4:
+							_v6$5:
 							while (true) {
 								if (_v6.b.a.$ === 'Just') {
-									if (_v6.b.b.$ === 'Nothing') {
-										if ((_v6.a === 'delete') && (_v6.b.c.$ === 'Nothing')) {
-											var _v10 = _v6.b;
-											var i = _v10.a.a;
-											var _v11 = _v10.b;
-											var _v12 = _v10.c;
-											return $elm$core$Result$Ok(
-												$author$project$Api$DeleteTodoEntry(i));
-										} else {
-											break _v6$4;
-										}
-									} else {
+									if (_v6.b.b.$ === 'Just') {
 										if ((_v6.a === 'update') && (_v6.b.c.$ === 'Nothing')) {
 											var _v13 = _v6.b;
 											var i = _v13.a.a;
@@ -3979,7 +3971,30 @@ var $author$project$Api$handleInput = A2(
 												$author$project$Api$UpdateTodoEntry(
 													{id: i, message: message}));
 										} else {
-											break _v6$4;
+											break _v6$5;
+										}
+									} else {
+										if (_v6.b.c.$ === 'Nothing') {
+											switch (_v6.a) {
+												case 'delete':
+													var _v10 = _v6.b;
+													var i = _v10.a.a;
+													var _v11 = _v10.b;
+													var _v12 = _v10.c;
+													return $elm$core$Result$Ok(
+														$author$project$Api$DeleteTodoEntry(i));
+												case 'toggle':
+													var _v15 = _v6.b;
+													var i = _v15.a.a;
+													var _v16 = _v15.b;
+													var _v17 = _v15.c;
+													return $elm$core$Result$Ok(
+														$author$project$Api$ToggleTodoEntry(i));
+												default:
+													break _v6$5;
+											}
+										} else {
+											break _v6$5;
 										}
 									}
 								} else {
@@ -3992,17 +4007,17 @@ var $author$project$Api$handleInput = A2(
 											return $elm$core$Result$Ok(
 												$author$project$Api$InsertTodoEntry(message));
 										} else {
-											break _v6$4;
+											break _v6$5;
 										}
 									} else {
 										if ((_v6.a === 'sync') && (_v6.b.c.$ === 'Nothing')) {
-											var _v15 = _v6.b;
-											var _v16 = _v15.a;
-											var _v17 = _v15.b;
-											var _v18 = _v15.c;
+											var _v18 = _v6.b;
+											var _v19 = _v18.a;
+											var _v20 = _v18.b;
+											var _v21 = _v18.c;
 											return $elm$core$Result$Ok($author$project$Api$SyncTodoEntry);
 										} else {
-											break _v6$4;
+											break _v6$5;
 										}
 									}
 								}
@@ -4010,105 +4025,105 @@ var $author$project$Api$handleInput = A2(
 							return $elm$core$Result$Err(
 								$author$project$DTT$Data$Error$WrongInputFormat(form));
 						case 'secrets':
-							var _v19 = _Utils_Tuple2(
+							var _v22 = _Utils_Tuple2(
 								action,
 								_Utils_Tuple3(id, content, amount));
-							_v19$3:
+							_v22$3:
 							while (true) {
-								if (_v19.b.a.$ === 'Nothing') {
-									if (_v19.b.b.$ === 'Just') {
-										if (_v19.b.c.$ === 'Nothing') {
-											switch (_v19.a) {
+								if (_v22.b.a.$ === 'Nothing') {
+									if (_v22.b.b.$ === 'Just') {
+										if (_v22.b.c.$ === 'Nothing') {
+											switch (_v22.a) {
 												case 'insert':
-													var _v20 = _v19.b;
-													var _v21 = _v20.a;
-													var secret = _v20.b.a;
-													var _v22 = _v20.c;
-													return $elm$core$Result$Ok(
-														$author$project$Api$InsertSecret(secret));
-												case 'delete':
-													var _v23 = _v19.b;
+													var _v23 = _v22.b;
 													var _v24 = _v23.a;
 													var secret = _v23.b.a;
 													var _v25 = _v23.c;
 													return $elm$core$Result$Ok(
+														$author$project$Api$InsertSecret(secret));
+												case 'delete':
+													var _v26 = _v22.b;
+													var _v27 = _v26.a;
+													var secret = _v26.b.a;
+													var _v28 = _v26.c;
+													return $elm$core$Result$Ok(
 														$author$project$Api$DeleteSecret(secret));
 												default:
-													break _v19$3;
+													break _v22$3;
 											}
 										} else {
-											break _v19$3;
+											break _v22$3;
 										}
 									} else {
-										if ((_v19.a === 'sync') && (_v19.b.c.$ === 'Nothing')) {
-											var _v26 = _v19.b;
-											var _v27 = _v26.a;
-											var _v28 = _v26.b;
-											var _v29 = _v26.c;
+										if ((_v22.a === 'sync') && (_v22.b.c.$ === 'Nothing')) {
+											var _v29 = _v22.b;
+											var _v30 = _v29.a;
+											var _v31 = _v29.b;
+											var _v32 = _v29.c;
 											return $elm$core$Result$Ok($author$project$Api$SyncSecret);
 										} else {
-											break _v19$3;
+											break _v22$3;
 										}
 									}
 								} else {
-									break _v19$3;
+									break _v22$3;
 								}
 							}
 							return $elm$core$Result$Err(
 								$author$project$DTT$Data$Error$WrongInputFormat(form));
 						case 'budget':
-							var _v30 = _Utils_Tuple2(
+							var _v33 = _Utils_Tuple2(
 								action,
 								_Utils_Tuple3(id, content, amount));
-							_v30$4:
+							_v33$4:
 							while (true) {
-								if (_v30.b.a.$ === 'Just') {
-									if (_v30.b.b.$ === 'Nothing') {
-										if ((_v30.a === 'delete') && (_v30.b.c.$ === 'Nothing')) {
-											var _v33 = _v30.b;
-											var i = _v33.a.a;
-											var _v34 = _v33.b;
-											var _v35 = _v33.c;
+								if (_v33.b.a.$ === 'Just') {
+									if (_v33.b.b.$ === 'Nothing') {
+										if ((_v33.a === 'delete') && (_v33.b.c.$ === 'Nothing')) {
+											var _v36 = _v33.b;
+											var i = _v36.a.a;
+											var _v37 = _v36.b;
+											var _v38 = _v36.c;
 											return $elm$core$Result$Ok(
 												$author$project$Api$DeleteBudget(i));
 										} else {
-											break _v30$4;
+											break _v33$4;
 										}
 									} else {
-										if ((_v30.a === 'update') && (_v30.b.c.$ === 'Just')) {
-											var _v36 = _v30.b;
-											var i = _v36.a.a;
-											var reference = _v36.b.a;
-											var cent = _v36.c.a;
+										if ((_v33.a === 'update') && (_v33.b.c.$ === 'Just')) {
+											var _v39 = _v33.b;
+											var i = _v39.a.a;
+											var reference = _v39.b.a;
+											var cent = _v39.c.a;
 											return $elm$core$Result$Ok(
 												$author$project$Api$UpdateBudget(
 													{cent: cent, id: i, reference: reference}));
 										} else {
-											break _v30$4;
+											break _v33$4;
 										}
 									}
 								} else {
-									if (_v30.b.b.$ === 'Just') {
-										if ((_v30.a === 'insert') && (_v30.b.c.$ === 'Just')) {
-											var _v31 = _v30.b;
-											var _v32 = _v31.a;
-											var reference = _v31.b.a;
-											var cent = _v31.c.a;
+									if (_v33.b.b.$ === 'Just') {
+										if ((_v33.a === 'insert') && (_v33.b.c.$ === 'Just')) {
+											var _v34 = _v33.b;
+											var _v35 = _v34.a;
+											var reference = _v34.b.a;
+											var cent = _v34.c.a;
 											return $elm$core$Result$Ok(
 												$author$project$Api$InsertBudget(
 													{cent: cent, reference: reference}));
 										} else {
-											break _v30$4;
+											break _v33$4;
 										}
 									} else {
-										if ((_v30.a === 'sync') && (_v30.b.c.$ === 'Nothing')) {
-											var _v37 = _v30.b;
-											var _v38 = _v37.a;
-											var _v39 = _v37.b;
-											var _v40 = _v37.c;
+										if ((_v33.a === 'sync') && (_v33.b.c.$ === 'Nothing')) {
+											var _v40 = _v33.b;
+											var _v41 = _v40.a;
+											var _v42 = _v40.b;
+											var _v43 = _v40.c;
 											return $elm$core$Result$Ok($author$project$Api$SyncBudget);
 										} else {
-											break _v30$4;
+											break _v33$4;
 										}
 									}
 								}
@@ -4365,40 +4380,63 @@ var $author$project$DTT$Data$Secret$codec = $miniBill$elm_codec$Codec$buildObjec
 				},
 				$miniBill$elm_codec$Codec$string,
 				$miniBill$elm_codec$Codec$object($author$project$DTT$Data$Secret$Secret)))));
-var $author$project$DTT$Data$TodoEntry$TodoEntry = F4(
-	function (id, user, message, lastUpdated) {
-		return {id: id, lastUpdated: lastUpdated, message: message, user: user};
+var $author$project$DTT$Data$TodoEntry$TodoEntry = F5(
+	function (id, user, message, lastUpdated, checked) {
+		return {checked: checked, id: id, lastUpdated: lastUpdated, message: message, user: user};
+	});
+var $elm$json$Json$Decode$bool = _Json_decodeBool;
+var $elm$json$Json$Encode$bool = _Json_wrap;
+var $miniBill$elm_codec$Codec$bool = A2($miniBill$elm_codec$Codec$build, $elm$json$Json$Encode$bool, $elm$json$Json$Decode$bool);
+var $elm$core$Maybe$withDefault = F2(
+	function (_default, maybe) {
+		if (maybe.$ === 'Just') {
+			var value = maybe.a;
+			return value;
+		} else {
+			return _default;
+		}
 	});
 var $author$project$DTT$Data$TodoEntry$codec = $miniBill$elm_codec$Codec$buildObject(
 	A4(
 		$miniBill$elm_codec$Codec$field,
-		'lastUpdated',
+		'checked',
 		function ($) {
-			return $.lastUpdated;
+			return $.checked;
 		},
-		$author$project$DTT$Data$codecPosix,
+		A3(
+			$miniBill$elm_codec$Codec$map,
+			$elm$core$Maybe$Just,
+			$elm$core$Maybe$withDefault(false),
+			$miniBill$elm_codec$Codec$bool),
 		A4(
 			$miniBill$elm_codec$Codec$field,
-			'message',
+			'lastUpdated',
 			function ($) {
-				return $.message;
+				return $.lastUpdated;
 			},
-			$miniBill$elm_codec$Codec$string,
+			$author$project$DTT$Data$codecPosix,
 			A4(
 				$miniBill$elm_codec$Codec$field,
-				'user',
+				'message',
 				function ($) {
-					return $.user;
+					return $.message;
 				},
 				$miniBill$elm_codec$Codec$string,
 				A4(
 					$miniBill$elm_codec$Codec$field,
-					'id',
+					'user',
 					function ($) {
-						return $.id;
+						return $.user;
 					},
-					$author$project$DTT$Data$Id$codec,
-					$miniBill$elm_codec$Codec$object($author$project$DTT$Data$TodoEntry$TodoEntry))))));
+					$miniBill$elm_codec$Codec$string,
+					A4(
+						$miniBill$elm_codec$Codec$field,
+						'id',
+						function ($) {
+							return $.id;
+						},
+						$author$project$DTT$Data$Id$codec,
+						$miniBill$elm_codec$Codec$object($author$project$DTT$Data$TodoEntry$TodoEntry)))))));
 var $author$project$DTT$Data$OutputForm$codec = $miniBill$elm_codec$Codec$buildObject(
 	A4(
 		$miniBill$elm_codec$Codec$field,
@@ -5137,15 +5175,6 @@ var $elm$core$Dict$values = function (dict) {
 		_List_Nil,
 		dict);
 };
-var $elm$core$Maybe$withDefault = F2(
-	function (_default, maybe) {
-		if (maybe.$ === 'Just') {
-			var value = maybe.a;
-			return value;
-		} else {
-			return _default;
-		}
-	});
 var $author$project$DTT$Data$Budget$getBudgetResponse = function (configUser) {
 	return A2(
 		$elm$core$Task$map,
@@ -5920,36 +5949,45 @@ var $author$project$DTT$String$todo = '/todo';
 var $author$project$DTT$Data$TodoEntry$deleteResponse = function (id) {
 	return $Orasund$elm_jsonstore$Jsonstore$delete($author$project$DTT$Data$url + ($author$project$DTT$String$todo + ('/' + id)));
 };
+var $Orasund$elm_jsonstore$Jsonstore$bool = $Orasund$elm_jsonstore$Jsonstore$Json(
+	_Utils_Tuple2($elm$json$Json$Decode$bool, $elm$json$Json$Encode$bool));
 var $author$project$DTT$Data$TodoEntry$json = $Orasund$elm_jsonstore$Jsonstore$toJson(
 	A4(
-		$Orasund$elm_jsonstore$Jsonstore$with,
-		'lastUpdated',
-		$author$project$DTT$Data$jsonPosix,
+		$Orasund$elm_jsonstore$Jsonstore$withMaybe,
+		'checked',
+		$Orasund$elm_jsonstore$Jsonstore$bool,
 		function ($) {
-			return $.lastUpdated;
+			return $.checked;
 		},
 		A4(
 			$Orasund$elm_jsonstore$Jsonstore$with,
-			'message',
-			$Orasund$elm_jsonstore$Jsonstore$string,
+			'lastUpdated',
+			$author$project$DTT$Data$jsonPosix,
 			function ($) {
-				return $.message;
+				return $.lastUpdated;
 			},
 			A4(
 				$Orasund$elm_jsonstore$Jsonstore$with,
-				'user',
+				'message',
 				$Orasund$elm_jsonstore$Jsonstore$string,
 				function ($) {
-					return $.user;
+					return $.message;
 				},
 				A4(
 					$Orasund$elm_jsonstore$Jsonstore$with,
-					'id',
-					$author$project$DTT$Data$Id$json,
+					'user',
+					$Orasund$elm_jsonstore$Jsonstore$string,
 					function ($) {
-						return $.id;
+						return $.user;
 					},
-					$Orasund$elm_jsonstore$Jsonstore$object($author$project$DTT$Data$TodoEntry$TodoEntry))))));
+					A4(
+						$Orasund$elm_jsonstore$Jsonstore$with,
+						'id',
+						$author$project$DTT$Data$Id$json,
+						function ($) {
+							return $.id;
+						},
+						$Orasund$elm_jsonstore$Jsonstore$object($author$project$DTT$Data$TodoEntry$TodoEntry)))))));
 var $author$project$DTT$Data$TodoEntry$getListResponse = A2(
 	$elm$core$Task$map,
 	A2(
@@ -6186,7 +6224,13 @@ var $author$project$DTT$Page$Todo$insertEntry = F2(
 							return $author$project$DTT$Data$TodoEntry$getListResponse;
 						},
 						$author$project$DTT$Data$TodoEntry$insertResponse(
-							{id: id, lastUpdated: config.currentTime, message: message, user: config.user})));
+							{
+								checked: $elm$core$Maybe$Just(false),
+								id: id,
+								lastUpdated: config.currentTime,
+								message: message,
+								user: config.user
+							})));
 			},
 			$author$project$DTT$Data$Id$generate);
 	});
@@ -6255,6 +6299,38 @@ var $author$project$DTT$Data$OutputForm$todo = function (list) {
 			todo: $elm$core$Maybe$Just(list)
 		});
 };
+var $author$project$DTT$String$checked = '/checked';
+var $author$project$DTT$Data$TodoEntry$toggleResponse = function (id) {
+	return A2(
+		$elm$core$Task$andThen,
+		function (maybeTodoEntry) {
+			if (maybeTodoEntry.$ === 'Just') {
+				var checked = maybeTodoEntry.a.checked;
+				return A2(
+					$Orasund$elm_jsonstore$Jsonstore$insert,
+					$author$project$DTT$Data$url + ($author$project$DTT$String$todo + ('/' + (id + $author$project$DTT$String$checked))),
+					A2(
+						$Orasund$elm_jsonstore$Jsonstore$encode,
+						$Orasund$elm_jsonstore$Jsonstore$bool,
+						!A2($elm$core$Maybe$withDefault, false, checked)));
+			} else {
+				return $elm$core$Task$succeed(_Utils_Tuple0);
+			}
+		},
+		$author$project$DTT$Data$TodoEntry$getResponse(id));
+};
+var $author$project$DTT$Page$Todo$toggle = F2(
+	function (config, id) {
+		return A2(
+			$elm$core$Task$andThen,
+			function (_v0) {
+				return A2($elm$core$Task$mapError, $author$project$DTT$Page$Todo$HttpError, $author$project$DTT$Data$TodoEntry$getListResponse);
+			},
+			A2(
+				$elm$core$Task$mapError,
+				$author$project$DTT$Page$Todo$HttpError,
+				$author$project$DTT$Data$TodoEntry$toggleResponse(id)));
+	});
 var $author$project$DTT$Page$Budget$update = F2(
 	function (config, _v0) {
 		var id = _v0.id;
@@ -6449,6 +6525,17 @@ var $author$project$Api$update = F4(
 									$elm$core$Platform$Cmd$map,
 									wrapper,
 									A2($elm$core$Task$attempt, $author$project$Api$GotTodoResponse, $author$project$DTT$Page$Todo$getList)));
+						case 'ToggleTodoEntry':
+							var id = input.a;
+							return _Utils_Tuple2(
+								model,
+								A2(
+									$elm$core$Platform$Cmd$map,
+									wrapper,
+									A2(
+										$elm$core$Task$attempt,
+										$author$project$Api$GotTodoResponse,
+										A2($author$project$DTT$Page$Todo$toggle, model, id))));
 						case 'DeleteTodoEntry':
 							var id = input.a;
 							return _Utils_Tuple2(

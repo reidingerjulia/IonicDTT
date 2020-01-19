@@ -54,6 +54,15 @@ Updates the message of an entry.
 
 Will cause an error if the entry was not created by the user.
 
+## toggle
+
+```
+{ page : "todo
+, action : "toggle"
+, id : String
+}
+```
+
 ## Subscriptions
 
 ```
@@ -62,6 +71,7 @@ Will cause an error if the entry was not created by the user.
     , user : String
     , message : String
     , lastUpdated : Posix
+    , checked : Bool
     }
   , ..
   ]
