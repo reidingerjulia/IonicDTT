@@ -13,8 +13,8 @@ type Error
     | NoPermission
 
 
-insertEntry : Config -> String -> Generator (Task Error (List TodoEntry))
-insertEntry config message =
+insertEntry : Config -> {message:String, category: String} -> Generator (Task Error (List TodoEntry))
+insertEntry config {message,category} =
     Id.generate
         |> Random.map
             (\id ->
@@ -23,6 +23,7 @@ insertEntry config message =
                 , message = message
                 , lastUpdated = config.currentTime
                 , checked = Just False
+                , category = Just category
                 }
                     |> TodoEntry.insertResponse
                     |> Task.andThen (\() -> TodoEntry.getListResponse)
@@ -59,9 +60,9 @@ toggle config id =
 
 updateEntry :
     Config
-    -> { id : Id, message : String }
+    -> { id : Id, message : String , category : String}
     -> Task Error (List TodoEntry)
-updateEntry config { id, message } =
+updateEntry config { id, message, category } =
     TodoEntry.getResponse id
         |> Task.mapError HttpError
         |> Task.andThen
@@ -71,6 +72,7 @@ updateEntry config { id, message } =
                         if user == config.user then
                             { entry
                                 | message = message
+                                , category = Just category
                                 , lastUpdated = config.currentTime
                             }
                                 |> TodoEntry.insertResponse
