@@ -1,4 +1,4 @@
-module DTT.Page.Todo exposing (Error(..), deleteEntry, getList, insertEntry, updateEntry)
+module DTT.Page.Todo exposing (Error(..),toggle, deleteEntry, getList, insertEntry, updateEntry)
 
 import DTT.Data.Config exposing (Config)
 import DTT.Data.Id as Id exposing (Id)
@@ -22,6 +22,7 @@ insertEntry config message =
                 , user = config.user
                 , message = message
                 , lastUpdated = config.currentTime
+                , checked = Just False
                 }
                     |> TodoEntry.insertResponse
                     |> Task.andThen (\() -> TodoEntry.getListResponse)
@@ -47,6 +48,12 @@ deleteEntry config id =
                     Nothing ->
                         Task.succeed ()
             )
+        |> Task.andThen (\() -> TodoEntry.getListResponse |> Task.mapError HttpError)
+
+toggle : Config -> Id -> Task Error (List TodoEntry)
+toggle config id =
+    TodoEntry.toggleResponse id
+        |> Task.mapError HttpError
         |> Task.andThen (\() -> TodoEntry.getListResponse |> Task.mapError HttpError)
 
 

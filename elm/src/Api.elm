@@ -28,6 +28,7 @@ type Input
         { id : String
         , message : String
         }
+    | ToggleTodoEntry String
     | SyncTodoEntry
     | InsertSecret String
     | DeleteSecret String
@@ -76,6 +77,9 @@ handleInput =
                                         { id = i
                                         , message = message
                                         }
+                            
+                            ( "toggle",(Just i,Nothing,Nothing)) ->
+                                Ok <| ToggleTodoEntry <| i
 
                             ( "sync", ( Nothing, Nothing, Nothing ) ) ->
                                 Ok <| SyncTodoEntry
@@ -263,6 +267,13 @@ update fromElm wrapper msg model =
                         SyncTodoEntry ->
                             ( model
                             , Todo.getList
+                                |> Task.attempt GotTodoResponse
+                                |> Cmd.map wrapper
+                            )
+                        
+                        ToggleTodoEntry id ->
+                            ( model
+                            , Todo.toggle model id
                                 |> Task.attempt GotTodoResponse
                                 |> Cmd.map wrapper
                             )

@@ -1,4 +1,4 @@
-module DTT.Data.TodoEntry exposing (TodoEntry, codec, deleteResponse, getListResponse, getResponse, insertResponse, json)
+module DTT.Data.TodoEntry exposing (TodoEntry, toggleResponse,codec, deleteResponse, getListResponse, getResponse, insertResponse, json)
 
 import Codec exposing (Codec)
 import DTT.Data as Data
@@ -16,8 +16,8 @@ type alias TodoEntry =
     , user : String
     , message : String
     , lastUpdated : Posix
+    , checked : Maybe Bool
     }
-
 
 json : Json TodoEntry
 json =
@@ -26,6 +26,7 @@ json =
         |> Jsonstore.with "user" Jsonstore.string .user
         |> Jsonstore.with "message" Jsonstore.string .message
         |> Jsonstore.with "lastUpdated" Data.jsonPosix .lastUpdated
+        |> Jsonstore.withMaybe "checked" Jsonstore.bool .checked
         |> Jsonstore.toJson
 
 
@@ -36,8 +37,26 @@ codec =
         |> Codec.field "user" .user Codec.string
         |> Codec.field "message" .message Codec.string
         |> Codec.field "lastUpdated" .lastUpdated Data.codecPosix
+        |> Codec.field "checked" 
+            .checked
+            (Codec.bool 
+              |> Codec.map Just (Maybe.withDefault False) 
+            )
         |> Codec.buildObject
 
+toggleResponse : Id -> Task Http.Error ()
+toggleResponse id =
+    getResponse id
+        |> Task.andThen (\maybeTodoEntry ->
+            case maybeTodoEntry of
+                Just {checked} ->
+                    checked |> Maybe.withDefault False
+                    |> not
+                    |> Jsonstore.encode Jsonstore.bool
+                    |> Jsonstore.insert (Data.url ++ String.todo ++ "/" ++ id ++ String.checked)
+                Nothing ->
+                    Task.succeed ()
+        )
 
 insertResponse : TodoEntry -> Task Http.Error ()
 insertResponse entry =
