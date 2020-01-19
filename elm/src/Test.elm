@@ -51,6 +51,7 @@ type alias RunningModel =
     , budget : Budget
     , inputId : String
     , inputContent : String
+    , inputContent2 : String
     , inputAmount : String
     }
 
@@ -65,6 +66,7 @@ type RunningMsg
     | FromApi E.Value
     | ChangedId String
     | ChangedContent String
+    | ChangedContent2 String
     | ChangedAmount String
     | EnteredInput
         { page : String
@@ -95,6 +97,7 @@ initModel apiModel =
         }
     , inputId = ""
     , inputContent = ""
+    , inputContent2 = ""
     , inputAmount = ""
     }
 
@@ -203,6 +206,10 @@ update msg model =
                 ChangedContent string ->
                     ( Running { runningModel | inputContent = string }, Cmd.none )
 
+                ChangedContent2 string ->
+                    ( Running { runningModel | inputContent2 = string }, Cmd.none )
+
+
                 ChangedAmount string ->
                     ( Running { runningModel | inputAmount = string }, Cmd.none )
 
@@ -213,6 +220,7 @@ update msg model =
                             , action = action
                             , id = Nothing
                             , content = Nothing
+                            , content2 = Nothing
                             , amount = Nothing
                             }
 
@@ -221,6 +229,7 @@ update msg model =
                             , action = action
                             , id = Just runningModel.inputId
                             , content = Nothing
+                            , content2 = Nothing
                             , amount = Nothing
                             }
 
@@ -229,6 +238,7 @@ update msg model =
                             , action = action
                             , id = Nothing
                             , content = Just runningModel.inputContent
+                            , content2 = Nothing
                             , amount = Nothing
                             }
 
@@ -237,6 +247,16 @@ update msg model =
                             , action = action
                             , id = Just runningModel.inputId
                             , content = Just runningModel.inputContent
+                            , content2 = Nothing
+                            , amount = Nothing
+                            }
+                        
+                        inputWithContentAndContent2 =
+                            { page = page
+                            , action = action
+                            , id = Nothing
+                            , content = Just runningModel.inputContent
+                            , content2 = Just runningModel.inputContent2
                             , amount = Nothing
                             }
 
@@ -245,6 +265,7 @@ update msg model =
                             , action = action
                             , id = Nothing
                             , content = Just runningModel.inputContent
+                            , content2 = Nothing
                             , amount = String.toInt <| runningModel.inputAmount
                             }
 
@@ -253,7 +274,16 @@ update msg model =
                             , action = action
                             , id = Just runningModel.inputId
                             , content = Just runningModel.inputContent
+                            , content2 = Nothing
                             , amount = String.toInt <| runningModel.inputAmount
+                            }
+                        inputWithIdAndContentAndContent2 =
+                            { page = page
+                            , action = action
+                            , id = Just runningModel.inputId
+                            , content = Just runningModel.inputContent
+                            , content2 = Just runningModel.inputContent2
+                            , amount = Nothing
                             }
 
                         maybeInput =
@@ -270,7 +300,7 @@ update msg model =
                                     Just inputNone
 
                                 ( "todo", "insert", ( False, True, False ) ) ->
-                                    Just inputWithContent
+                                    Just inputWithContentAndContent2
 
                                 ( "todo", "delete", ( True, False, False ) ) ->
                                     Just inputWithId
@@ -279,7 +309,7 @@ update msg model =
                                     Just inputWithId
                                 
                                 ( "todo", "update", ( True, True, False ) ) ->
-                                    Just inputWithIdAndContent
+                                    Just inputWithIdAndContentAndContent2
 
                                 ( "secrets", "sync", ( False, False, False ) ) ->
                                     Just inputNone
@@ -390,7 +420,7 @@ view model =
                             ]
                         ]
 
-                Running { error, todoList, secretsList, budget, inputId, inputContent, inputAmount, apiModel } ->
+                Running { error, todoList, secretsList, budget, inputId, inputContent,inputContent2, inputAmount, apiModel } ->
                     List.map (Element.map RunningSpecific) <|
                         [ case error of
                             Just e ->
@@ -426,6 +456,12 @@ view model =
                                 , text = inputContent
                                 }
                             , Input.text Input.simple <|
+                                { label = Input.labelLeft Input.label <| Element.text "Content2"
+                                , onChange = ChangedContent2
+                                , placeholder = Nothing
+                                , text = inputContent2
+                                }
+                            , Input.text Input.simple <|
                                 { label = Input.labelLeft Input.label <| Element.text "Amount"
                                 , onChange = ChangedAmount
                                 , placeholder = Nothing
@@ -457,7 +493,7 @@ view model =
                         , Element.column Grid.section <|
                             (todoList
                                 |> List.map
-                                    (\{ id, user, message, lastUpdated,checked } ->
+                                    (\{ id, user, message,category ,lastUpdated,checked } ->
                                         Element.row Grid.spacedEvenly <|
                                             [ Element.text <| id
                                             , Element.text <| user
@@ -466,6 +502,7 @@ view model =
                                                 Just True -> "True"
                                                 Just False -> "False"
                                                 Nothing -> ""
+                                            , Element.text <| Maybe.withDefault "" <| category
                                             , Element.text <| "timestamp: " ++ (String.fromInt <| Time.posixToMillis <| lastUpdated)
                                             ]
                                     )

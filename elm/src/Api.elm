@@ -22,11 +22,15 @@ import Time exposing (Posix)
 
 
 type Input
-    = InsertTodoEntry String
+    = InsertTodoEntry
+        { message : String
+        , category : String
+        }
     | DeleteTodoEntry String
     | UpdateTodoEntry
         { id : String
         , message : String
+        , category : String
         }
     | ToggleTodoEntry String
     | SyncTodoEntry
@@ -53,7 +57,7 @@ handleInput =
         >> Result.mapError
             (D.errorToString >> ParsingError)
         >> Result.andThen
-            (\({ page, action, id, content, amount } as form) ->
+            (\({ page, action, id, content, content2, amount } as form) ->
                 case page of
                     "admin" ->
                         case ( action, ( id, content, amount ) ) of
@@ -64,24 +68,28 @@ handleInput =
                                 Err <| WrongInputFormat <| form
 
                     "todo" ->
-                        case ( action, ( id, content, amount ) ) of
-                            ( "insert", ( Nothing, Just message, Nothing ) ) ->
-                                Ok <| InsertTodoEntry <| message
+                        case ( action, ( id, (content,content2), amount ) ) of
+                            ( "insert", ( Nothing, (Just message,Just category), Nothing ) ) ->
+                                Ok <| InsertTodoEntry <| 
+                                    {message=message
+                                    ,category=category
+                                    }
 
-                            ( "delete", ( Just i, Nothing, Nothing ) ) ->
+                            ( "delete", ( Just i, (Nothing,Nothing), Nothing ) ) ->
                                 Ok <| DeleteTodoEntry <| i
 
-                            ( "update", ( Just i, Just message, Nothing ) ) ->
+                            ( "update", ( Just i, (Just message,Just category), Nothing ) ) ->
                                 Ok <|
                                     UpdateTodoEntry <|
                                         { id = i
                                         , message = message
+                                        , category = category
                                         }
                             
-                            ( "toggle",(Just i,Nothing,Nothing)) ->
+                            ( "toggle",(Just i,(Nothing,Nothing),Nothing)) ->
                                 Ok <| ToggleTodoEntry <| i
 
-                            ( "sync", ( Nothing, Nothing, Nothing ) ) ->
+                            ( "sync", ( Nothing, (Nothing,Nothing), Nothing ) ) ->
                                 Ok <| SyncTodoEntry
 
                             _ ->
@@ -249,12 +257,14 @@ update fromElm wrapper msg model =
             case result of
                 Ok input ->
                     case input of
-                        InsertTodoEntry message ->
+                        InsertTodoEntry {message,category} ->
                             let
                                 ( cmd, seed ) =
                                     model.seed
                                         |> Random.step
-                                            (message
+                                            ({message=message
+                                             ,category=category
+                                            }
                                                 |> Todo.insertEntry model
                                             )
                             in

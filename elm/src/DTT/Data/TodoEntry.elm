@@ -17,6 +17,7 @@ type alias TodoEntry =
     , message : String
     , lastUpdated : Posix
     , checked : Maybe Bool
+    , category : Maybe String
     }
 
 json : Json TodoEntry
@@ -27,6 +28,7 @@ json =
         |> Jsonstore.with "message" Jsonstore.string .message
         |> Jsonstore.with "lastUpdated" Data.jsonPosix .lastUpdated
         |> Jsonstore.withMaybe "checked" Jsonstore.bool .checked
+        |> Jsonstore.withMaybe "category" Jsonstore.string .category
         |> Jsonstore.toJson
 
 
@@ -42,6 +44,9 @@ codec =
             (Codec.bool 
               |> Codec.map Just (Maybe.withDefault False) 
             )
+        |> Codec.field "category" .category
+            (Codec.string 
+            |> Codec.map Just (Maybe.withDefault ""))
         |> Codec.buildObject
 
 toggleResponse : Id -> Task Http.Error ()

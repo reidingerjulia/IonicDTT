@@ -6076,9 +6076,9 @@ var $author$project$Test$WrongFormat = function (a) {
 var $author$project$Test$WrongInput = function (a) {
 	return {$: 'WrongInput', a: a};
 };
-var $author$project$DTT$Data$InputForm$InputForm = F5(
-	function (page, action, id, content, amount) {
-		return {action: action, amount: amount, content: content, id: id, page: page};
+var $author$project$DTT$Data$InputForm$InputForm = F6(
+	function (page, action, id, content, content2, amount) {
+		return {action: action, amount: amount, content: content, content2: content2, id: id, page: page};
 	});
 var $miniBill$elm_codec$Codec$Codec = function (a) {
 	return {$: 'Codec', a: a};
@@ -6250,33 +6250,40 @@ var $author$project$DTT$Data$InputForm$codec = $miniBill$elm_codec$Codec$buildOb
 		$miniBill$elm_codec$Codec$int,
 		A4(
 			$miniBill$elm_codec$Codec$optionalField,
-			'content',
+			'content2',
 			function ($) {
-				return $.content;
+				return $.content2;
 			},
 			$miniBill$elm_codec$Codec$string,
 			A4(
 				$miniBill$elm_codec$Codec$optionalField,
-				'id',
+				'content',
 				function ($) {
-					return $.id;
+					return $.content;
 				},
 				$miniBill$elm_codec$Codec$string,
 				A4(
-					$miniBill$elm_codec$Codec$field,
-					'action',
+					$miniBill$elm_codec$Codec$optionalField,
+					'id',
 					function ($) {
-						return $.action;
+						return $.id;
 					},
-					A3($miniBill$elm_codec$Codec$map, $elm$core$String$toLower, $elm$core$String$toLower, $miniBill$elm_codec$Codec$string),
+					$miniBill$elm_codec$Codec$string,
 					A4(
 						$miniBill$elm_codec$Codec$field,
-						'page',
+						'action',
 						function ($) {
-							return $.page;
+							return $.action;
 						},
 						A3($miniBill$elm_codec$Codec$map, $elm$core$String$toLower, $elm$core$String$toLower, $miniBill$elm_codec$Codec$string),
-						$miniBill$elm_codec$Codec$object($author$project$DTT$Data$InputForm$InputForm)))))));
+						A4(
+							$miniBill$elm_codec$Codec$field,
+							'page',
+							function ($) {
+								return $.page;
+							},
+							A3($miniBill$elm_codec$Codec$map, $elm$core$String$toLower, $elm$core$String$toLower, $miniBill$elm_codec$Codec$string),
+							$miniBill$elm_codec$Codec$object($author$project$DTT$Data$InputForm$InputForm))))))));
 var $author$project$DTT$Data$OutputForm$OutputForm = F4(
 	function (error, todo, secrets, budget) {
 		return {budget: budget, error: error, secrets: secrets, todo: todo};
@@ -6411,9 +6418,9 @@ var $author$project$DTT$Data$Secret$codec = $miniBill$elm_codec$Codec$buildObjec
 				},
 				$miniBill$elm_codec$Codec$string,
 				$miniBill$elm_codec$Codec$object($author$project$DTT$Data$Secret$Secret)))));
-var $author$project$DTT$Data$TodoEntry$TodoEntry = F5(
-	function (id, user, message, lastUpdated, checked) {
-		return {checked: checked, id: id, lastUpdated: lastUpdated, message: message, user: user};
+var $author$project$DTT$Data$TodoEntry$TodoEntry = F6(
+	function (id, user, message, lastUpdated, checked, category) {
+		return {category: category, checked: checked, id: id, lastUpdated: lastUpdated, message: message, user: user};
 	});
 var $elm$json$Json$Decode$bool = _Json_decodeBool;
 var $elm$json$Json$Encode$bool = _Json_wrap;
@@ -6430,44 +6437,55 @@ var $elm$core$Maybe$withDefault = F2(
 var $author$project$DTT$Data$TodoEntry$codec = $miniBill$elm_codec$Codec$buildObject(
 	A4(
 		$miniBill$elm_codec$Codec$field,
-		'checked',
+		'category',
 		function ($) {
-			return $.checked;
+			return $.category;
 		},
 		A3(
 			$miniBill$elm_codec$Codec$map,
 			$elm$core$Maybe$Just,
-			$elm$core$Maybe$withDefault(false),
-			$miniBill$elm_codec$Codec$bool),
+			$elm$core$Maybe$withDefault(''),
+			$miniBill$elm_codec$Codec$string),
 		A4(
 			$miniBill$elm_codec$Codec$field,
-			'lastUpdated',
+			'checked',
 			function ($) {
-				return $.lastUpdated;
+				return $.checked;
 			},
-			$author$project$DTT$Data$codecPosix,
+			A3(
+				$miniBill$elm_codec$Codec$map,
+				$elm$core$Maybe$Just,
+				$elm$core$Maybe$withDefault(false),
+				$miniBill$elm_codec$Codec$bool),
 			A4(
 				$miniBill$elm_codec$Codec$field,
-				'message',
+				'lastUpdated',
 				function ($) {
-					return $.message;
+					return $.lastUpdated;
 				},
-				$miniBill$elm_codec$Codec$string,
+				$author$project$DTT$Data$codecPosix,
 				A4(
 					$miniBill$elm_codec$Codec$field,
-					'user',
+					'message',
 					function ($) {
-						return $.user;
+						return $.message;
 					},
 					$miniBill$elm_codec$Codec$string,
 					A4(
 						$miniBill$elm_codec$Codec$field,
-						'id',
+						'user',
 						function ($) {
-							return $.id;
+							return $.user;
 						},
-						$author$project$DTT$Data$Id$codec,
-						$miniBill$elm_codec$Codec$object($author$project$DTT$Data$TodoEntry$TodoEntry)))))));
+						$miniBill$elm_codec$Codec$string,
+						A4(
+							$miniBill$elm_codec$Codec$field,
+							'id',
+							function ($) {
+								return $.id;
+							},
+							$author$project$DTT$Data$Id$codec,
+							$miniBill$elm_codec$Codec$object($author$project$DTT$Data$TodoEntry$TodoEntry))))))));
 var $author$project$DTT$Data$OutputForm$codec = $miniBill$elm_codec$Codec$buildObject(
 	A4(
 		$miniBill$elm_codec$Codec$field,
@@ -6604,6 +6622,7 @@ var $author$project$Api$handleInput = A2(
 					var action = form.action;
 					var id = form.id;
 					var content = form.content;
+					var content2 = form.content2;
 					var amount = form.amount;
 					switch (page) {
 						case 'admin':
@@ -6623,37 +6642,46 @@ var $author$project$Api$handleInput = A2(
 						case 'todo':
 							var _v6 = _Utils_Tuple2(
 								action,
-								_Utils_Tuple3(id, content, amount));
+								_Utils_Tuple3(
+									id,
+									_Utils_Tuple2(content, content2),
+									amount));
 							_v6$5:
 							while (true) {
 								if (_v6.b.a.$ === 'Just') {
-									if (_v6.b.b.$ === 'Just') {
-										if ((_v6.a === 'update') && (_v6.b.c.$ === 'Nothing')) {
-											var _v13 = _v6.b;
-											var i = _v13.a.a;
-											var message = _v13.b.a;
-											var _v14 = _v13.c;
+									if (_v6.b.b.a.$ === 'Just') {
+										if (((_v6.a === 'update') && (_v6.b.b.b.$ === 'Just')) && (_v6.b.c.$ === 'Nothing')) {
+											var _v16 = _v6.b;
+											var i = _v16.a.a;
+											var _v17 = _v16.b;
+											var message = _v17.a.a;
+											var category = _v17.b.a;
+											var _v18 = _v16.c;
 											return $elm$core$Result$Ok(
 												$author$project$Api$UpdateTodoEntry(
-													{id: i, message: message}));
+													{category: category, id: i, message: message}));
 										} else {
 											break _v6$5;
 										}
 									} else {
-										if (_v6.b.c.$ === 'Nothing') {
+										if ((_v6.b.b.b.$ === 'Nothing') && (_v6.b.c.$ === 'Nothing')) {
 											switch (_v6.a) {
 												case 'delete':
-													var _v10 = _v6.b;
-													var i = _v10.a.a;
-													var _v11 = _v10.b;
-													var _v12 = _v10.c;
+													var _v11 = _v6.b;
+													var i = _v11.a.a;
+													var _v12 = _v11.b;
+													var _v13 = _v12.a;
+													var _v14 = _v12.b;
+													var _v15 = _v11.c;
 													return $elm$core$Result$Ok(
 														$author$project$Api$DeleteTodoEntry(i));
 												case 'toggle':
-													var _v15 = _v6.b;
-													var i = _v15.a.a;
-													var _v16 = _v15.b;
-													var _v17 = _v15.c;
+													var _v19 = _v6.b;
+													var i = _v19.a.a;
+													var _v20 = _v19.b;
+													var _v21 = _v20.a;
+													var _v22 = _v20.b;
+													var _v23 = _v19.c;
 													return $elm$core$Result$Ok(
 														$author$project$Api$ToggleTodoEntry(i));
 												default:
@@ -6664,23 +6692,28 @@ var $author$project$Api$handleInput = A2(
 										}
 									}
 								} else {
-									if (_v6.b.b.$ === 'Just') {
-										if ((_v6.a === 'insert') && (_v6.b.c.$ === 'Nothing')) {
+									if (_v6.b.b.a.$ === 'Just') {
+										if (((_v6.a === 'insert') && (_v6.b.b.b.$ === 'Just')) && (_v6.b.c.$ === 'Nothing')) {
 											var _v7 = _v6.b;
 											var _v8 = _v7.a;
-											var message = _v7.b.a;
-											var _v9 = _v7.c;
+											var _v9 = _v7.b;
+											var message = _v9.a.a;
+											var category = _v9.b.a;
+											var _v10 = _v7.c;
 											return $elm$core$Result$Ok(
-												$author$project$Api$InsertTodoEntry(message));
+												$author$project$Api$InsertTodoEntry(
+													{category: category, message: message}));
 										} else {
 											break _v6$5;
 										}
 									} else {
-										if ((_v6.a === 'sync') && (_v6.b.c.$ === 'Nothing')) {
-											var _v18 = _v6.b;
-											var _v19 = _v18.a;
-											var _v20 = _v18.b;
-											var _v21 = _v18.c;
+										if (((_v6.a === 'sync') && (_v6.b.b.b.$ === 'Nothing')) && (_v6.b.c.$ === 'Nothing')) {
+											var _v24 = _v6.b;
+											var _v25 = _v24.a;
+											var _v26 = _v24.b;
+											var _v27 = _v26.a;
+											var _v28 = _v26.b;
+											var _v29 = _v24.c;
 											return $elm$core$Result$Ok($author$project$Api$SyncTodoEntry);
 										} else {
 											break _v6$5;
@@ -6691,105 +6724,105 @@ var $author$project$Api$handleInput = A2(
 							return $elm$core$Result$Err(
 								$author$project$DTT$Data$Error$WrongInputFormat(form));
 						case 'secrets':
-							var _v22 = _Utils_Tuple2(
+							var _v30 = _Utils_Tuple2(
 								action,
 								_Utils_Tuple3(id, content, amount));
-							_v22$3:
+							_v30$3:
 							while (true) {
-								if (_v22.b.a.$ === 'Nothing') {
-									if (_v22.b.b.$ === 'Just') {
-										if (_v22.b.c.$ === 'Nothing') {
-											switch (_v22.a) {
+								if (_v30.b.a.$ === 'Nothing') {
+									if (_v30.b.b.$ === 'Just') {
+										if (_v30.b.c.$ === 'Nothing') {
+											switch (_v30.a) {
 												case 'insert':
-													var _v23 = _v22.b;
-													var _v24 = _v23.a;
-													var secret = _v23.b.a;
-													var _v25 = _v23.c;
+													var _v31 = _v30.b;
+													var _v32 = _v31.a;
+													var secret = _v31.b.a;
+													var _v33 = _v31.c;
 													return $elm$core$Result$Ok(
 														$author$project$Api$InsertSecret(secret));
 												case 'delete':
-													var _v26 = _v22.b;
-													var _v27 = _v26.a;
-													var secret = _v26.b.a;
-													var _v28 = _v26.c;
+													var _v34 = _v30.b;
+													var _v35 = _v34.a;
+													var secret = _v34.b.a;
+													var _v36 = _v34.c;
 													return $elm$core$Result$Ok(
 														$author$project$Api$DeleteSecret(secret));
 												default:
-													break _v22$3;
+													break _v30$3;
 											}
 										} else {
-											break _v22$3;
+											break _v30$3;
 										}
 									} else {
-										if ((_v22.a === 'sync') && (_v22.b.c.$ === 'Nothing')) {
-											var _v29 = _v22.b;
-											var _v30 = _v29.a;
-											var _v31 = _v29.b;
-											var _v32 = _v29.c;
+										if ((_v30.a === 'sync') && (_v30.b.c.$ === 'Nothing')) {
+											var _v37 = _v30.b;
+											var _v38 = _v37.a;
+											var _v39 = _v37.b;
+											var _v40 = _v37.c;
 											return $elm$core$Result$Ok($author$project$Api$SyncSecret);
 										} else {
-											break _v22$3;
+											break _v30$3;
 										}
 									}
 								} else {
-									break _v22$3;
+									break _v30$3;
 								}
 							}
 							return $elm$core$Result$Err(
 								$author$project$DTT$Data$Error$WrongInputFormat(form));
 						case 'budget':
-							var _v33 = _Utils_Tuple2(
+							var _v41 = _Utils_Tuple2(
 								action,
 								_Utils_Tuple3(id, content, amount));
-							_v33$4:
+							_v41$4:
 							while (true) {
-								if (_v33.b.a.$ === 'Just') {
-									if (_v33.b.b.$ === 'Nothing') {
-										if ((_v33.a === 'delete') && (_v33.b.c.$ === 'Nothing')) {
-											var _v36 = _v33.b;
-											var i = _v36.a.a;
-											var _v37 = _v36.b;
-											var _v38 = _v36.c;
+								if (_v41.b.a.$ === 'Just') {
+									if (_v41.b.b.$ === 'Nothing') {
+										if ((_v41.a === 'delete') && (_v41.b.c.$ === 'Nothing')) {
+											var _v44 = _v41.b;
+											var i = _v44.a.a;
+											var _v45 = _v44.b;
+											var _v46 = _v44.c;
 											return $elm$core$Result$Ok(
 												$author$project$Api$DeleteBudget(i));
 										} else {
-											break _v33$4;
+											break _v41$4;
 										}
 									} else {
-										if ((_v33.a === 'update') && (_v33.b.c.$ === 'Just')) {
-											var _v39 = _v33.b;
-											var i = _v39.a.a;
-											var reference = _v39.b.a;
-											var cent = _v39.c.a;
+										if ((_v41.a === 'update') && (_v41.b.c.$ === 'Just')) {
+											var _v47 = _v41.b;
+											var i = _v47.a.a;
+											var reference = _v47.b.a;
+											var cent = _v47.c.a;
 											return $elm$core$Result$Ok(
 												$author$project$Api$UpdateBudget(
 													{cent: cent, id: i, reference: reference}));
 										} else {
-											break _v33$4;
+											break _v41$4;
 										}
 									}
 								} else {
-									if (_v33.b.b.$ === 'Just') {
-										if ((_v33.a === 'insert') && (_v33.b.c.$ === 'Just')) {
-											var _v34 = _v33.b;
-											var _v35 = _v34.a;
-											var reference = _v34.b.a;
-											var cent = _v34.c.a;
+									if (_v41.b.b.$ === 'Just') {
+										if ((_v41.a === 'insert') && (_v41.b.c.$ === 'Just')) {
+											var _v42 = _v41.b;
+											var _v43 = _v42.a;
+											var reference = _v42.b.a;
+											var cent = _v42.c.a;
 											return $elm$core$Result$Ok(
 												$author$project$Api$InsertBudget(
 													{cent: cent, reference: reference}));
 										} else {
-											break _v33$4;
+											break _v41$4;
 										}
 									} else {
-										if ((_v33.a === 'sync') && (_v33.b.c.$ === 'Nothing')) {
-											var _v40 = _v33.b;
-											var _v41 = _v40.a;
-											var _v42 = _v40.b;
-											var _v43 = _v40.c;
+										if ((_v41.a === 'sync') && (_v41.b.c.$ === 'Nothing')) {
+											var _v48 = _v41.b;
+											var _v49 = _v48.a;
+											var _v50 = _v48.b;
+											var _v51 = _v48.c;
 											return $elm$core$Result$Ok($author$project$Api$SyncBudget);
 										} else {
-											break _v33$4;
+											break _v41$4;
 										}
 									}
 								}
@@ -8338,40 +8371,47 @@ var $Orasund$elm_jsonstore$Jsonstore$bool = $Orasund$elm_jsonstore$Jsonstore$Jso
 var $author$project$DTT$Data$TodoEntry$json = $Orasund$elm_jsonstore$Jsonstore$toJson(
 	A4(
 		$Orasund$elm_jsonstore$Jsonstore$withMaybe,
-		'checked',
-		$Orasund$elm_jsonstore$Jsonstore$bool,
+		'category',
+		$Orasund$elm_jsonstore$Jsonstore$string,
 		function ($) {
-			return $.checked;
+			return $.category;
 		},
 		A4(
-			$Orasund$elm_jsonstore$Jsonstore$with,
-			'lastUpdated',
-			$author$project$DTT$Data$jsonPosix,
+			$Orasund$elm_jsonstore$Jsonstore$withMaybe,
+			'checked',
+			$Orasund$elm_jsonstore$Jsonstore$bool,
 			function ($) {
-				return $.lastUpdated;
+				return $.checked;
 			},
 			A4(
 				$Orasund$elm_jsonstore$Jsonstore$with,
-				'message',
-				$Orasund$elm_jsonstore$Jsonstore$string,
+				'lastUpdated',
+				$author$project$DTT$Data$jsonPosix,
 				function ($) {
-					return $.message;
+					return $.lastUpdated;
 				},
 				A4(
 					$Orasund$elm_jsonstore$Jsonstore$with,
-					'user',
+					'message',
 					$Orasund$elm_jsonstore$Jsonstore$string,
 					function ($) {
-						return $.user;
+						return $.message;
 					},
 					A4(
 						$Orasund$elm_jsonstore$Jsonstore$with,
-						'id',
-						$author$project$DTT$Data$Id$json,
+						'user',
+						$Orasund$elm_jsonstore$Jsonstore$string,
 						function ($) {
-							return $.id;
+							return $.user;
 						},
-						$Orasund$elm_jsonstore$Jsonstore$object($author$project$DTT$Data$TodoEntry$TodoEntry)))))));
+						A4(
+							$Orasund$elm_jsonstore$Jsonstore$with,
+							'id',
+							$author$project$DTT$Data$Id$json,
+							function ($) {
+								return $.id;
+							},
+							$Orasund$elm_jsonstore$Jsonstore$object($author$project$DTT$Data$TodoEntry$TodoEntry))))))));
 var $author$project$DTT$Data$TodoEntry$getListResponse = A2(
 	$elm$core$Task$map,
 	A2(
@@ -8540,7 +8580,9 @@ var $author$project$DTT$Data$TodoEntry$insertResponse = function (entry) {
 		A2($Orasund$elm_jsonstore$Jsonstore$encode, $author$project$DTT$Data$TodoEntry$json, entry));
 };
 var $author$project$DTT$Page$Todo$insertEntry = F2(
-	function (config, message) {
+	function (config, _v0) {
+		var message = _v0.message;
+		var category = _v0.category;
 		return A2(
 			$elm$random$Random$map,
 			function (id) {
@@ -8549,11 +8591,12 @@ var $author$project$DTT$Page$Todo$insertEntry = F2(
 					$author$project$DTT$Page$Todo$HttpError,
 					A2(
 						$elm$core$Task$andThen,
-						function (_v0) {
+						function (_v1) {
 							return $author$project$DTT$Data$TodoEntry$getListResponse;
 						},
 						$author$project$DTT$Data$TodoEntry$insertResponse(
 							{
+								category: $elm$core$Maybe$Just(category),
 								checked: $elm$core$Maybe$Just(false),
 								id: id,
 								lastUpdated: config.currentTime,
@@ -8693,6 +8736,7 @@ var $author$project$DTT$Page$Todo$updateEntry = F2(
 	function (config, _v0) {
 		var id = _v0.id;
 		var message = _v0.message;
+		var category = _v0.category;
 		return A2(
 			$elm$core$Task$andThen,
 			function (_v2) {
@@ -8710,7 +8754,11 @@ var $author$project$DTT$Page$Todo$updateEntry = F2(
 							$author$project$DTT$Data$TodoEntry$insertResponse(
 								_Utils_update(
 									entry,
-									{lastUpdated: config.currentTime, message: message}))) : $elm$core$Task$fail($author$project$DTT$Page$Todo$NoPermission);
+									{
+										category: $elm$core$Maybe$Just(category),
+										lastUpdated: config.currentTime,
+										message: message
+									}))) : $elm$core$Task$fail($author$project$DTT$Page$Todo$NoPermission);
 					} else {
 						return $elm$core$Task$succeed(_Utils_Tuple0);
 					}
@@ -8826,10 +8874,14 @@ var $author$project$Api$update = F4(
 					var input = result.a;
 					switch (input.$) {
 						case 'InsertTodoEntry':
-							var message = input.a;
+							var message = input.a.message;
+							var category = input.a.category;
 							var _v9 = A2(
 								$elm$random$Random$step,
-								A2($author$project$DTT$Page$Todo$insertEntry, model, message),
+								A2(
+									$author$project$DTT$Page$Todo$insertEntry,
+									model,
+									{category: category, message: message}),
 								model.seed);
 							var cmd = _v9.a;
 							var seed = _v9.b;
@@ -9015,6 +9067,7 @@ var $author$project$Test$initModel = function (apiModel) {
 		error: $elm$core$Maybe$Nothing,
 		inputAmount: '',
 		inputContent: '',
+		inputContent2: '',
 		inputId: '',
 		secretsList: _List_Nil,
 		todoList: _List_Nil
@@ -9204,6 +9257,14 @@ var $author$project$Test$update = F2(
 										runningModel,
 										{inputContent: string})),
 								$elm$core$Platform$Cmd$none);
+						case 'ChangedContent2':
+							var string = runningMsg.a;
+							return _Utils_Tuple2(
+								$author$project$Test$Running(
+									_Utils_update(
+										runningModel,
+										{inputContent2: string})),
+								$elm$core$Platform$Cmd$none);
 						case 'ChangedAmount':
 							var string = runningMsg.a;
 							return _Utils_Tuple2(
@@ -9215,10 +9276,19 @@ var $author$project$Test$update = F2(
 						default:
 							var page = runningMsg.a.page;
 							var action = runningMsg.a.action;
+							var inputWithIdAndContentAndContent2 = {
+								action: action,
+								amount: $elm$core$Maybe$Nothing,
+								content: $elm$core$Maybe$Just(runningModel.inputContent),
+								content2: $elm$core$Maybe$Just(runningModel.inputContent2),
+								id: $elm$core$Maybe$Just(runningModel.inputId),
+								page: page
+							};
 							var inputWithIdAndContentAndAmount = {
 								action: action,
 								amount: $elm$core$String$toInt(runningModel.inputAmount),
 								content: $elm$core$Maybe$Just(runningModel.inputContent),
+								content2: $elm$core$Maybe$Nothing,
 								id: $elm$core$Maybe$Just(runningModel.inputId),
 								page: page
 							};
@@ -9226,6 +9296,7 @@ var $author$project$Test$update = F2(
 								action: action,
 								amount: $elm$core$Maybe$Nothing,
 								content: $elm$core$Maybe$Just(runningModel.inputContent),
+								content2: $elm$core$Maybe$Nothing,
 								id: $elm$core$Maybe$Just(runningModel.inputId),
 								page: page
 							};
@@ -9233,13 +9304,23 @@ var $author$project$Test$update = F2(
 								action: action,
 								amount: $elm$core$Maybe$Nothing,
 								content: $elm$core$Maybe$Nothing,
+								content2: $elm$core$Maybe$Nothing,
 								id: $elm$core$Maybe$Just(runningModel.inputId),
+								page: page
+							};
+							var inputWithContentAndContent2 = {
+								action: action,
+								amount: $elm$core$Maybe$Nothing,
+								content: $elm$core$Maybe$Just(runningModel.inputContent),
+								content2: $elm$core$Maybe$Just(runningModel.inputContent2),
+								id: $elm$core$Maybe$Nothing,
 								page: page
 							};
 							var inputWithContentAndAmount = {
 								action: action,
 								amount: $elm$core$String$toInt(runningModel.inputAmount),
 								content: $elm$core$Maybe$Just(runningModel.inputContent),
+								content2: $elm$core$Maybe$Nothing,
 								id: $elm$core$Maybe$Nothing,
 								page: page
 							};
@@ -9247,10 +9328,11 @@ var $author$project$Test$update = F2(
 								action: action,
 								amount: $elm$core$Maybe$Nothing,
 								content: $elm$core$Maybe$Just(runningModel.inputContent),
+								content2: $elm$core$Maybe$Nothing,
 								id: $elm$core$Maybe$Nothing,
 								page: page
 							};
-							var inputNone = {action: action, amount: $elm$core$Maybe$Nothing, content: $elm$core$Maybe$Nothing, id: $elm$core$Maybe$Nothing, page: page};
+							var inputNone = {action: action, amount: $elm$core$Maybe$Nothing, content: $elm$core$Maybe$Nothing, content2: $elm$core$Maybe$Nothing, id: $elm$core$Maybe$Nothing, page: page};
 							var maybeInput = function () {
 								var _v25 = _Utils_Tuple3(
 									page,
@@ -9288,7 +9370,7 @@ var $author$project$Test$update = F2(
 													case 'todo':
 														if (_v25.b === 'insert') {
 															var _v27 = _v25.c;
-															return $elm$core$Maybe$Just(inputWithContent);
+															return $elm$core$Maybe$Just(inputWithContentAndContent2);
 														} else {
 															break _v25$12;
 														}
@@ -9348,7 +9430,7 @@ var $author$project$Test$update = F2(
 												if (!_v25.c.c) {
 													if (_v25.a === 'todo') {
 														var _v30 = _v25.c;
-														return $elm$core$Maybe$Just(inputWithIdAndContent);
+														return $elm$core$Maybe$Just(inputWithIdAndContentAndContent2);
 													} else {
 														break _v25$12;
 													}
@@ -9441,6 +9523,9 @@ var $author$project$Test$ChangedAmount = function (a) {
 };
 var $author$project$Test$ChangedContent = function (a) {
 	return {$: 'ChangedContent', a: a};
+};
+var $author$project$Test$ChangedContent2 = function (a) {
+	return {$: 'ChangedContent2', a: a};
 };
 var $author$project$Test$ChangedId = function (a) {
 	return {$: 'ChangedId', a: a};
@@ -16731,6 +16816,7 @@ var $author$project$Test$view = function (model) {
 					var budget = model.a.budget;
 					var inputId = model.a.inputId;
 					var inputContent = model.a.inputContent;
+					var inputContent2 = model.a.inputContent2;
 					var inputAmount = model.a.inputAmount;
 					var apiModel = model.a.apiModel;
 					return A2(
@@ -16798,6 +16884,18 @@ var $author$project$Test$view = function (model) {
 											onChange: $author$project$Test$ChangedContent,
 											placeholder: $elm$core$Maybe$Nothing,
 											text: inputContent
+										}),
+										A2(
+										$mdgriffith$elm_ui$Element$Input$text,
+										$Orasund$elm_ui_framework$Framework$Input$simple,
+										{
+											label: A2(
+												$mdgriffith$elm_ui$Element$Input$labelLeft,
+												$Orasund$elm_ui_framework$Framework$Input$label,
+												$mdgriffith$elm_ui$Element$text('Content2')),
+											onChange: $author$project$Test$ChangedContent2,
+											placeholder: $elm$core$Maybe$Nothing,
+											text: inputContent2
 										}),
 										A2(
 										$mdgriffith$elm_ui$Element$Input$text,
@@ -16879,6 +16977,7 @@ var $author$project$Test$view = function (model) {
 										var id = _v3.id;
 										var user = _v3.user;
 										var message = _v3.message;
+										var category = _v3.category;
 										var lastUpdated = _v3.lastUpdated;
 										var checked = _v3.checked;
 										return A2(
@@ -16901,6 +17000,8 @@ var $author$project$Test$view = function (model) {
 															return '';
 														}
 													}()),
+													$mdgriffith$elm_ui$Element$text(
+													A2($elm$core$Maybe$withDefault, '', category)),
 													$mdgriffith$elm_ui$Element$text(
 													'timestamp: ' + $elm$core$String$fromInt(
 														$elm$time$Time$posixToMillis(lastUpdated)))
