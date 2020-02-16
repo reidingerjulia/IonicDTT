@@ -1,0 +1,31 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>LoveFinders</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+
+<ion-content >
+  <ion-item>
+    <img src="../assets/img/yourimage.jpg">
+  </ion-item>
+  <ion-grid>
+    <ion-row>
+<ion-col>
+        <ion-item>
+            <ion-input type="text" placeholder="Username" [(ngModel)]="username"></ion-input>
+          </ion-item>
+        </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col>
+        <ion-buttons>
+            <ion-button outline large color="primary" (click)="loginClick()">Klick to Enter the Dungeon</ion-button>
+          </ion-buttons>
+        </ion-col>
+    </ion-row>
+  </ion-grid>
+
+  <script src="assets/js/main.js"></script>
+
+</ion-content>

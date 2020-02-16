@@ -1,0 +1,30 @@
+<ion-header>
+  <ion-toolbar color="purpur">
+    <ion-title>
+    </ion-title>
+    <ion-label padding = "5px" slot="end">User: {{username}}</ion-label>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+
+  <ion-grid>
+    <ion-row  *ngFor="let secret of secrets">
+      <ion-col ><svg [innerHtml]="secret.img"></svg></ion-col>
+      <ion-col >User: {{secret.user}}</ion-col>
+      <ion-col color="primary" vertical-align="middle">"{{secret.raw}}"</ion-col>
+    </ion-row>
+  </ion-grid>
+
+
+    <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+      <ion-fab-button (click)="addNewSecret()">
+        <ion-icon name="add"></ion-icon>
+      </ion-fab-button>
+    </ion-fab>
+    <ion-fab vertical="bottom" horizontal="start" slot="fixed">
+      <ion-fab-button (click)="removeSecret()">
+        <ion-icon name="trash"></ion-icon>
+      </ion-fab-button>
+    </ion-fab>
+</ion-content>
